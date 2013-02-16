@@ -3,13 +3,18 @@
 Plugin Name: VarkTech Min and Max Purchase for WooCommerce
 Plugin URI: http://varktech.com
 Description: An e-commerce add-on for WooCommerce, supplying minimum and maximum purchase functionality.
-Version: 1.0
+Version: 1.05
 Author: Vark
 Author URI: http://varktech.com
 */
 
 /*
 == Changelog ==
+
+= 1.05 - 2013-02-13 =
+* Bug Fix - Rule Add screen was being overwritten by some other plugins' global metaboxes - thanks to Dagofee for debug help
+* Bug Fix - PHP version check not being executed correctly on activation hook (minimum PHP version 5 required)
+* Bug Fix - Nuke and Repair buttons on Options screen were also affecting main Options settings, now fixed
  
 = 1.0  - 2013-01-15 =
 * Initial Public Release
@@ -25,19 +30,21 @@ Author URI: http://varktech.com
    $vtmam_cart;
    $vtmam_cart_item;
    $vtmam_setup_options;
-//   $vtmam_error_msg;
+
+
      
 class VTMAM_Controller{
 	
 	public function __construct(){    
    
-		define('VTMAM_VERSION',                               '1.0');
-    define('VTMAM_LAST_UPDATE_DATE',                      '2013-01-15');
+		define('VTMAM_VERSION',                               '1.05');
+    define('VTMAM_LAST_UPDATE_DATE',                      '2013-02-13');
     define('VTMAM_DIRNAME',                               ( dirname( __FILE__ ) ));
     define('VTMAM_URL',                                   plugins_url( '', __FILE__ ) );
     define('VTMAM_EARLIEST_ALLOWED_WP_VERSION',           '3.3');   //To pick up wp_get_object_terms fix, which is required for vtmam-parent-functions.php
     define('VTMAM_EARLIEST_ALLOWED_PHP_VERSION',          '5');
     define('VTMAM_PLUGIN_SLUG',                           plugin_basename(__FILE__));
+    define('VTMAM_PLUGIN_PATH',                            WP_PLUGIN_DIR . '/min-and-max-purchase-for-woocommerce/vt-minandmax-purchase.php/');
     
     require ( VTMAM_DIRNAME . '/woo-integration/vtmam-parent-definitions.php');
    
@@ -65,17 +72,15 @@ class VTMAM_Controller{
     global $vtmam_setup_options;
    
     load_plugin_textdomain( 'vtmam', null, dirname( plugin_basename( __FILE__ ) ) . '/languages' ); 
-
+                                                                               
     require ( VTMAM_DIRNAME . '/core/vtmam-backbone.php' );    
     require ( VTMAM_DIRNAME . '/core/vtmam-rules-classes.php');
     require ( VTMAM_DIRNAME . '/woo-integration/vtmam-parent-functions.php');
     require ( VTMAM_DIRNAME . '/woo-integration/vtmam-parent-cart-validation.php');
     
     if (is_admin()){
-        register_activation_hook(__FILE__, array( $this, 'vtmam_activation_hook'));   
-        register_uninstall_hook (__FILE__, array(&$this, 'vtmam_uninstall_hook'));
-        
         require ( VTMAM_DIRNAME . '/admin/vtmam-setup-options.php');
+        //fix 02-03-2013 - register_activation_hook now at bottom of file, after class instantiates
         
         if(defined('VTMAM_PRO_DIRNAME')) {
           require ( VTMAM_PRO_DIRNAME . '/admin/vtmam-rules-ui.php' );
@@ -261,9 +266,8 @@ class VTMAM_Controller{
   /* ************************************************
   **   Admin - Activation Hook
   *************************************************** */  
-  function vtmam_activation_hook() {
+   function vtmam_activation_hook() {
      //the options are added at admin_init time by the setup_options.php as soon as plugin is activated!!!
-    
     //verify the requirements for Vtmin.
     global $wp_version;
 		if((float)$wp_version < 3.3){
@@ -271,27 +275,32 @@ class VTMAM_Controller{
 			 wp_die( __('<strong>Looks like you\'re running an older version of WordPress, you need to be running at least WordPress 3.3 to use the Varktech Minimum Purchase plugin.</strong>', 'vtmam'), __('VT Minimum Purchase not compatible - WP', 'vtmam'), array('back_link' => true));
 			return;
 		}
-    
-		if((float)phpversion() < 5){
-			// delete_option('vtmam_setup_options');
-			 wp_die( __('<strong>Looks like you\'re running an older version of PHP, you need to be running at least PHP 5 to use the Varktech Minimum Purchase plugin.  Contact your host to upgrade to PHP 5.</strong>', 'vtmam'), __('VT Minimum Purchase not compatible - PHP', 'vtmam'), array('back_link' => true));
-			return;
+           
+    //fix 02-13-2013 - changed php version_compare, altered error msg   
+   if (version_compare(PHP_VERSION, VTMAM_EARLIEST_ALLOWED_PHP_VERSION) < 0) {    //'<0' = 1st value is lower 
+			wp_die( __('<strong><em>PLUGIN CANNOT ACTIVATE &nbsp;&nbsp;-&nbsp;&nbsp;     Varktech Min and Max Purchase </em>
+      <br><br>&nbsp;&nbsp;&nbsp;&nbsp;   Your installation is running on an older version of PHP 
+      <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   - your PHP version = ', 'vtmam') .PHP_VERSION. __(' . 
+      <br><br>&nbsp;&nbsp;&nbsp;&nbsp;   You need to be running **at least PHP version 5** to use this plugin.  
+      <br><br>&nbsp;&nbsp;&nbsp;&nbsp;   Please contact your host and request an upgrade to PHP 5+ . 
+      <br><br>&nbsp;&nbsp;&nbsp;&nbsp;   Then activate this plugin following the upgrade.</strong>', 'vtmam'), __('VT Min and Max Purchase not compatible - PHP', 'vtmam'), array('back_link' => true));
+			return; 
 		}
     
-    if(defined('WPSC_VERSION') && (VTMAM_PARENT_PLUGIN_NAME == 'WooCommerce') ) { 
+        
+    if(defined('WPSC_VERSION') && (VTMAM_PARENT_PLUGIN_NAME == 'WP E-Commerce') ) { 
       $new_version =      VTMAM_EARLIEST_ALLOWED_PARENT_VERSION;
       $current_version =  WPSC_VERSION;
       if( (version_compare(strval($new_version), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower 
   			// delete_option('vtmam_setup_options');
-  			 wp_die( __('<strong>Looks like you\'re running an older version of WooCommerce. <br>You need to be running at least ** WooCommerce 3.8 **, to use the Varktech Minimum Purchase plugin.</strong>', 'vtmam'), __('VT Minimum Purchase not compatible - WPEC', 'vtmam'), array('back_link' => true));
+  			 wp_die( __('<strong>Looks like you\'re running an older version of WP E-Commerce. <br>You need to be running at least ** WP E-Commerce 3.8 **, to use the Varktech Min and Max Purchase plugin.</strong>', 'vtmam'), __('VT Min and Max Purchase not compatible - WPEC', 'vtmam'), array('back_link' => true));
   			return;
   		}
     }  else 
-    if (VTMAM_PARENT_PLUGIN_NAME == 'WooCommerce') {
-        wp_die( __('<strong>Varktech Minimum Purchase for WooCommerce requires that WooCommerce be installed and activated.</strong>', 'vtmam'), __('WooCommerce not installed or activated', 'vtmam'), array('back_link' => true));
+    if (VTMAM_PARENT_PLUGIN_NAME == 'WP E-Commerce') {
+        wp_die( __('<strong>Varktech Min and Max Purchase for WP E-Commerce requires that WP E-Commerce be installed and activated.</strong>', 'vtmam'), __('WP E-Commerce not installed or activated', 'vtmam'), array('back_link' => true));
   			return;
     }
-    
 
     if(defined('WOOCOMMERCE_VERSION') && (VTMAM_PARENT_PLUGIN_NAME == 'WooCommerce')) { 
       $new_version =      VTMAM_EARLIEST_ALLOWED_PARENT_VERSION;
@@ -313,7 +322,7 @@ class VTMAM_Controller{
       $current_version =  JIGOSHOP_VERSION;
       if( (version_compare(strval($new_version), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower
   			// delete_option('vtmam_setup_options');
-  			 wp_die( __('<strong>Looks like you\'re running an older version of JigoShop. <br>You need to be running at least ** JigoShop 3.8 **, to use the Varktech Minimum Purchase plugin.</strong>', 'vtmam'), __('VT Minimum Purchase not compatible - JigoShop', 'vtmam'), array('back_link' => true));
+  			 wp_die( __('<strong>Looks like you\'re running an older version of JigoShop. <br>You need to be running at least ** JigoShop 1.0 **, to use the Varktech Minimum Purchase plugin.</strong>', 'vtmam'), __('VT Minimum Purchase not compatible - JigoShop', 'vtmam'), array('back_link' => true));
   			return;
   		}
     }  else 
@@ -340,6 +349,16 @@ class VTMAM_Controller{
       $vtmam_nuke->vtmam_nuke_all_rule_cats();
       
   }
-  
+
+
 } //end class
-$vtmam_controller = new VTMAM_Controller;
+$vtmam_controller = new VTMAM_Controller; 
+
+  //***************************************************************************************
+  //fix 02-13-2013  -  problems with activation hook and class, solved herewith....
+  //   FROM http://website-in-a-weekend.net/tag/register_activation_hook/
+  //***************************************************************************************
+  if (is_admin()){ 
+        register_activation_hook(__FILE__, array($vtmam_controller, 'vtmam_activation_hook'));
+        register_activation_hook(__FILE__, array($vtmam_controller, 'vtmam_uninstall_hook'));                                   
+  }

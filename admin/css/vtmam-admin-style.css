@@ -1,4 +1,31 @@
 
+           
+           /*
+           *** -----------------------------------------------------
+           CSS FIX FOR OTHER PLUGINS METABOX PROBLEMS...    2/13/2013
+           *** -----------------------------------------------------
+           Some plugins insert global metaboxes which conflict with this plugin
+           
+           remove them by shutting off .postbox,
+           then allowing *this plugin's* specific meta boxes to display only.
+           
+           (id selector takes precedence over the class selector.)           
+           */
+            .postbox {display:none;}
+            
+            div#vtmam-max-rule-type,
+            div#vtmam-pop-in-select,
+            div#vtmam-pop-in-specifics,
+            div#vtmam-rule-amount,
+            div#vtmam-rule-msg,
+            div#vtmam-rule-id,
+            div#vtmam-rule-minandmax,
+            div#vtmam-rule-resources,
+            div#vtmam-errmsg,
+            div#submitdiv 
+            {display:block;}
+            /* end fix */
+
             div#vtmam-max-rule-type.postbox,
             div#vtmam-pop-in-select.postbox,
             div#vtmam-pop-out-select.postbox,
@@ -447,7 +474,7 @@
               min-width:200px;
               max-width:200px;
               margin-top:40px;
-          }
+          }      
            
           /**********************************/
           /*      Resource div stuff        */

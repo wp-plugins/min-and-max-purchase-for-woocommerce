@@ -269,7 +269,7 @@ function vtmam_setup_options_cntl() {
         <h3><?php esc_attr_e('Min and Max Purchase Rules Repair and Delete Buttons', 'vtmam'); ?></h3> 
         <h4><?php esc_attr_e('Repair reknits the Rules Custom Post Type with the Min and Max Purchase rules option array, if out of sync.', 'vtmam'); ?></h4>        
         <input id="repair-button"       name="vtmam_setup_options[rules-repair]"  type="submit" class="button-fourth"     value="<?php esc_attr_e('Repair Rules Structures', 'vtmam'); ?>" /> 
-        <h4><?php esc_attr_e('Nuke Rules deletes all Min and Max Purchase Rules, Setup Options.  Hit "Reset Options" to create new options.', 'vtmam'); ?></h4>
+        <h4><?php esc_attr_e('Nuke Rules deletes all Min and Max Purchase Rules.', 'vtmam'); ?></h4>
         <input id="nuke-rules-button"   name="vtmam_setup_options[rules-nuke]"     type="submit" class="button-third"      value="<?php esc_attr_e('Nuke all Rules', 'vtmam'); ?>" />
         <h4><?php esc_attr_e('Nuke Rule Cats deletes all Min and Max Purchase Rule Categories', 'vtmam'); ?></h4>
         <input id="nuke-cats-button"    name="vtmam_setup_options[cats-nuke]"      type="submit" class="button-fifth"      value="<?php esc_attr_e('Nuke all Rule Cats', 'vtmam'); ?>" />
@@ -1099,21 +1099,30 @@ function vtmam_validate_setup_input( $input ) {
     case $repair       === true :    //repair rules
         $vtmam_nuke = new VTMAM_Rule_delete;            
         $vtmam_nuke->vtmam_repair_all_rules();
+        $output = get_option( 'vtmam_setup_options' );  //fix 2-13-2013 - initialize output, otherwise all Options go away...
       break;
     case $nuke_rules   === true :
         $vtmam_nuke = new VTMAM_Rule_delete;            
         $vtmam_nuke->vtmam_nuke_all_rules();
+        $output = get_option( 'vtmam_setup_options' );  //fix 2-13-2013 - initialize output, otherwise all Options go away...
       break;
     case $nuke_cats    === true :    
         $vtmam_nuke = new VTMAM_Rule_delete;            
         $vtmam_nuke->vtmam_nuke_all_rule_cats();
+        $output = get_option( 'vtmam_setup_options' );  //fix 2-13-2013 - initialize output, otherwise all Options go away...
       break;
     case $nuke_hist    === true :    
         $vtmam_nuke = new VTMAM_Rule_delete;            
         $vtmam_nuke->vtmam_nuke_max_purchase_history();
+        $output = get_option( 'vtmam_setup_options' );  //fix 2-13-2013 - initialize output, otherwise all Options go away...
       break;
     default:   //standard update button hit...                 
-        
+        $output = array();
+      	foreach( $input as $key => $value ) {
+      		if( isset( $input[$key] ) ) {
+      			$output[$key] = strip_tags( stripslashes( $input[ $key ] ) );	
+      		} // end if		
+      	} // end foreach
       break;
   }
    
@@ -1166,15 +1175,6 @@ function vtmam_validate_setup_input( $input ) {
         add_settings_error( 'VTMAM Options', 'Show Error Messages', $admin_errorMsg , 'error' );  
      } 
     
-   //options always edit/update, except for reset which exits earlier...
-
-    $output = array();
-  	foreach( $input as $key => $value ) {
-  		if( isset( $input[$key] ) ) {
-  			$output[$key] = strip_tags( stripslashes( $input[ $key ] ) );	
-  		} // end if		
-  	} // end foreach
- 
   //NO Object-based code on the apply_filters statement needed or wanted!!!!!!!!!!!!!
   return apply_filters( 'vtmam_validate_setup_input', $output, $input );                       
 } 
