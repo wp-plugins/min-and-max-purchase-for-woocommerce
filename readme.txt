@@ -4,7 +4,7 @@ Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocom
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.05
+Stable tag: 1.06
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -149,6 +149,9 @@ Please review the following printed and video documentation.
 
 
 == Changelog ==
+
+= 1.06 - 2013-02-23 =
+* Bug Fix - "unexpected T_CLASS" - File admin/vtmin-rules-ui.php was corrupted, but the corruption only showed up on some hosts (?!).  Huge thanks to Don for allowing full access to his installation to debug.   
 
 = 1.05 - 2013-02-13 =
 * Bug Fix - Rule Add screen was being overwritten by some other plugins' global metaboxes - thanks to Dagofee for debug help
