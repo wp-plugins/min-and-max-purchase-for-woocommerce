@@ -3,7 +3,7 @@ Contributors: vark
 Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
-Tested up to: 3.5.1
+Tested up to: 3.9
 Stable tag: 1.06
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,7 +39,7 @@ Fully tested with WooCommerce 2.0 .
 
 = How does the rule choose to examine the cart? [Search Criteria]  =
 
-*   By  Role / Membership / logged in status, for cart contents
+*   By  Role / Membership / logged in status, for cart contents  (allows different pricing rules for customer types / logged-in role, such as wholesalers or preferred customers).
 
 
 = How does the rule choose to examine the cart? [Search Criteria - Pro Plugin]  =
