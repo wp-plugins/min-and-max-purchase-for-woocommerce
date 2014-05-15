@@ -57,6 +57,11 @@ class VTMAM_Rule {
      public  $maxRule_typeSelected;
      public  $maxRule_typeSelected_selection;    
      
+     //v1.07 begin
+     //custom messaging      
+     public  $custMsg_text;
+     //v1.07 end     
+              
      /*********************
      * error messages during admin rule creation - if error message, 
      *      overall rule status is pending, 
@@ -292,7 +297,9 @@ class VTMAM_Rule {
         ) 
       );
      $this->maxRule_typeSelected_selection; //cart or lifetime      
-      
+          
+     $this->custMsg_text; //v1.07
+            
      /* ************************************************* */
      /* ************************************************* */
      /* Rule Processing at Purchase

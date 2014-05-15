@@ -3,8 +3,8 @@ Contributors: vark
 Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
-Tested up to: 3.9
-Stable tag: 1.06
+Tested up to: 3.9.1
+Stable tag: 1.07
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -152,6 +152,16 @@ Please review the following printed and video documentation.
 
 == Changelog ==
 
+= 1.07 - 2014-05-15 =
+* Enhancement - change currency sign and currency formatting to follow parent plugin, removed setting from this plugin
+* Enhancement - Add Min and Max Purchase categories to Plugin Submenu
+* Fix - Https issue resolved
+* Fix - Warnings damped  
+* Enhancement - Custom Messaging! Overrides default messaging for rule.
+* Fix - New rule add - stutter removed
+* Fix - change add_error to add_notice.
+* Fix - removed add capability in backbone
+
 = 1.06 - 2013-02-23 =
 * Bug Fix - "unexpected T_CLASS/T_PUBLIC" - File admin/vtmXX-rules-ui.php was corrupted, but the corruption only showed up on some hosts (?!).  Huge thanks to Don for allowing full access to his installation to debug.   
 
@@ -165,6 +175,16 @@ Please review the following printed and video documentation.
 
 
 == Upgrade Notice ==
+
+= 1.07 - 2014-05-15 =
+* Enhancement - change currency sign and currency formatting to follow parent plugin, removed setting from this plugin
+* Enhancement - Add Min and Max Purchase categories to Plugin Submenu
+* Fix - Https issue resolved
+* Fix - Warnings damped  
+* Enhancement - Custom Messaging! Overrides default messaging for rule.
+* Fix - New rule add - stutter removed
+* Fix - change add_error to add_notice.
+* Fix - removed add capability in backbone
 
 = 1.0 - 2013-01-15 =
 * Initial Public Release

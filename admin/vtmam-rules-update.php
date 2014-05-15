@@ -125,8 +125,15 @@ class VTMAM_Rule_update {
         case 'lifetime':
             $vtmam_rule->maxRule_typeSelected[1]['user_input'] = $selected;
           break;
-     }
+     }     
      
+     //v1.07 begin
+     $vtmam_rule->custMsg_text = $_REQUEST['cust-msg-text'];
+     global $vtmam_info;
+     if ( $vtmam_rule->custMsg_text == $vtmam_info['default_full_msg']) {
+        $vtmam_rule->custMsg_text = '';   //re-initialize if default msg still there...
+     }   
+     //v1.07 end
      
     //*****************************************
     //  If errors were found, the error message array will be displayed by the UI on next screen send.

@@ -67,39 +67,78 @@ class VTMAM_Parent_Cart_Validation {
   *************************************************** */
 	public function vtmam_woo_apply_checkout_cntl(){
     global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce;
-        
+    vtmam_debug_options();  //v1.07     
     //input and output to the apply_rules routine in the global variables.
     //    results are put into $vtmam_cart
     
+    /*  removed v1.07  $vtmam_cart is not available until after apply_rules is run!!
     if ( $vtmam_cart->error_messages_processed == 'yes' ) {  
-      $woocommerce->add_error(  __('Purchase error found.', 'vtmam') );  //supplies an error msg and prevents payment from completing 
+      wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice      
       return;
     }
-    
+    */
      $vtmam_apply_rules = new VTMAM_Apply_Rules;   
     
     //ERROR Message Path
-    if ( sizeof($vtmam_cart->error_messages) > 0 ) {      
-      //insert error messages into checkout page
-      add_action( "wp_enqueue_scripts", array($this, 'vtmam_enqueue_error_msg_css') );
-      add_action('wp_head', array(&$this, 'vtmam_display_rule_error_msg_at_checkout') );  //JS to insert error msgs   
-      $vtmam_cart->error_messages_processed = 'yes';
-      $woocommerce->add_error(  __('Purchase error found.', 'vtmam') );  //supplies an error msg and prevents payment from completing  
+    if ( sizeof($vtmam_cart->error_messages) > 0 ) { 
+    
+      //v1.08 changes begin
+        switch( $vtmam_cart->error_messages_are_custom ) {  
+          case 'all':
+               $this->vtmam_display_custom_messages();
+            break;
+          case 'some':    
+               $this->vtmam_display_custom_messages();
+               $this->vtmam_display_standard_messages();
+            break;           
+          default:  //'none' / no state set yet
+               $this->vtmam_display_standard_messages();
+               wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                     
+            break;                    
+        }
+
+      //v1.08 changes end     
+
     }     
   }
-      
+
+
+  /* ************************************************
+  **   v1.08 New Function
+  *************************************************** */
+  public function vtmam_display_standard_messages() {
+    global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce;
+    //insert error messages into checkout page
+    add_action( "wp_enqueue_scripts", array($this, 'vtmam_enqueue_error_msg_css') );
+    add_action('wp_head', array(&$this, 'vtmam_display_rule_error_msg_at_checkout') );  //JS to insert error msgs 
+    $vtmam_cart->error_messages_processed = 'yes';
+  } 
+
+  /* ************************************************
+  **   v1.08 New Function
+  *************************************************** */
+  public function vtmam_display_custom_messages() {
+    global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce;
+    
+    for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
+       if ($vtmam_cart->error_messages[$i]['msg_is_custom'] == 'yes') {  //v1.08 ==>> show custom messages here...
+          wc_add_notice( $vtmam_cart->error_messages[$i]['msg_text'], $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                
+       } //end if
+    }  //end 'for' loop    
+  }   
+        
            
   /* ************************************************
   **   Application - Apply Rules at Woo E-Commerce  ==> AT Place Order Time <==
   *************************************************** */
 	public function vtmam_woo_place_order_cntl(){
     global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce;
-        
+    vtmam_debug_options();  //v1.07     
     //input and output to the apply_rules routine in the global variables.
     //    results are put into $vtmam_cart
     
     if ( $vtmam_cart->error_messages_processed == 'yes' ) {  
-      $woocommerce->add_error(  __('Purchase error found.', 'vtmam') );  //supplies an error msg and prevents payment from completing 
+      wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                      
       return;
     }
     
@@ -135,11 +174,10 @@ class VTMAM_Parent_Cart_Validation {
       $vtmam_cart->error_messages_processed = 'yes';
       
       //tell WOO that an error has occurred, and not to proceed further
-      $woocommerce->add_error(  __('Purchase error found.', 'vtmam') );  //supplies an error msg and prevents payment from completing      
+      wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                      
 
     }  
-   // else { $woocommerce->add_error(  __('FAKE Purchase error found.', 'vtmam') ); } //Test lifetime history max rule logic
-    
+   
   }  
 
   
@@ -181,6 +219,7 @@ class VTMAM_Parent_Cart_Validation {
     //loop through all of the error messages 
     //          $vtmam_info['line_cnt'] is used when table formattted msgs come through.  Otherwise produces an inactive css id. 
     for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
+       if ($vtmam_cart->error_messages[$i]['msg_is_custom'] != 'yes') {  //v1.07 ==>> don't show custom messages here..     
      ?>
         <?php 
           //default selector for products area (".shop_table") is used on BOTH cart page and checkout page. Only use on cart page
@@ -195,6 +234,7 @@ class VTMAM_Parent_Cart_Validation {
            $('<div class="vtmam-error" id="line-cnt<?php echo $vtmam_info['line_cnt'] ?>"><h3 class="error-title">Purchase Error</h3><p> <?php echo $vtmam_cart->error_messages[$i]['msg_text'] ?> </p></div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_address_selector'] ?>');
     <?php 
           }
+       } //v1.07 end if          
     }  //end 'for' loop      
      ?>   
             });   
@@ -221,20 +261,66 @@ class VTMAM_Parent_Cart_Validation {
    
   /* ************************************************
   **   Application - get current page url
+  *       
+  *       The code checking for 'www.' is included since
+  *       some server configurations do not respond with the
+  *       actual info, as to whether 'www.' is part of the 
+  *       URL.  The additional code balances out the currURL,
+  *       relative to the Parent Plugin's recorded URLs           
   *************************************************** */ 
  public  function vtmam_currPageURL() {
+     global $vtmam_info;
+     $currPageURL = $this->vtmam_get_currPageURL();
+     $www = 'www.';
+     
+     $curr_has_www = 'no';
+     if (strpos($currPageURL, $www )) {
+         $curr_has_www = 'yes';
+     }
+     
+     //use checkout URL as an example of all setup URLs
+     $checkout_has_www = 'no';
+     if (strpos($vtmam_info['woo_checkout_url'], $www )) {
+         $checkout_has_www = 'yes';
+     }     
+         
+     switch( true ) {
+        case ( ($curr_has_www == 'yes') && ($checkout_has_www == 'yes') ):
+        case ( ($curr_has_www == 'no')  && ($checkout_has_www == 'no') ): 
+            //all good, no action necessary
+          break;
+        case ( ($curr_has_www == 'no') && ($checkout_has_www == 'yes') ):
+            //reconstruct the URL with 'www.' included.
+            $currPageURL = $this->vtmam_get_currPageURL($www); 
+          break;
+        case ( ($curr_has_www == 'yes') && ($checkout_has_www == 'no') ): 
+            //all of the woo URLs have no 'www.', and curr has it, so remove the string 
+            $currPageURL = str_replace($www, "", $currPageURL);
+          break;
+     } 
+ 
+     return $currPageURL;
+  } 
+ public  function vtmam_get_currPageURL($www = null) {
+     global $vtmam_info;
      $pageURL = 'http';
-     if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-        $pageURL .= "://";
+     //if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+     if ( isset( $_SERVER["HTTPS"] ) && strtolower( $_SERVER["HTTPS"] ) == "on" ) { $pageURL .= "s";}
+     $pageURL .= "://";
+     $pageURL .= $www;   //mostly null, only active rarely, 2nd time through - see above
+     
+     //NEVER create the URL with the port name!!!!!!!!!!!!!!
+     $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+     /* 
      if ($_SERVER["SERVER_PORT"] != "80") {
         $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
      } else {
         $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
      }
+     */
      return $pageURL;
-  } 
- 
-    
+  }  
+   
 
   /* ************************************************
   **   Application - On Error enqueue error style

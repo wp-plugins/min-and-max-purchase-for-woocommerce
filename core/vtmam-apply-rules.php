@@ -8,10 +8,8 @@ class VTMAM_Apply_Rules{
     
     $vtmam_rules_set = get_option( 'vtmam_rules_set' );
 
-    $vtmam_parent_functions = new VTMAM_Parent_Functions;
-    
     // create a new vtmam_cart intermediary area, load with parent cart values.  results in global $vtmam_cart.
-    $vtmam_parent_functions->vtmam_load_vtmam_cart_for_processing(); 
+    vtmam_load_vtmam_cart_for_processing(); 
     
     $this->vtmam_minandmax_purchase_check();
 	}
@@ -404,6 +402,22 @@ class VTMAM_Apply_Rules{
       for($i=0; $i < sizeof($vtmam_rules_set); $i++) {               
         //verify that the rule both requires action, and has the group label we're interested in...
         if ( ( $vtmam_rules_set[$i]->rule_requires_cart_action == 'yes' ) && ( $vtmam_rules_set[$i]->minandmaxSelected_selection == $msg_minandmax_label ) ) { 
+          //v1.07 begin
+          if ( $vtmam_rules_set[$i]->custMsg_text > ' ') { //custom msg override              
+              /*
+              ==>> text error msg function always executed, so msg already loaded there - don't load here
+              $vtmam_cart->error_messages[] = array (
+                'msg_from_this_rule_id' => $vtmam_rules_set[$i]->post_id, 
+                 'msg_minandmax_label' => $vtmam_rules_set[$i]->minandmaxSelected_selection, 
+                'msg_from_this_rule_occurrence' => $i, 
+                'msg_text'  => $vtmam_rules_set[$i]->custMsg_text,
+                'msg_is_custom'   => 'yes' 
+              );
+              $this->vtmam_set_custom_msgs_status ('customMsg');
+              */
+              continue;
+           }           
+          //v1.07 end           
           $mom_error_msg_produced = 'yes';
           switch ( $vtmam_rules_set[$i]->specChoice_in_selection ) {
             case  'all' :
@@ -452,7 +466,14 @@ class VTMAM_Apply_Rules{
       $message .= __('</span>', 'vtmam'); //end "table-error-messages"
                                                                                    
       if ($mom_error_msg_produced) {
-        $vtmam_cart->error_messages[] = array ('msg_from_this_rule_id' => $rule_id_list, 'msg_minandmax_label' => $msg_minandmax_label, 'msg_from_this_rule_occurrence' => '', 'msg_text'  => $message );       
+        $vtmam_cart->error_messages[] = array (
+          'msg_from_this_rule_id' => $rule_id_list, 
+          'msg_minandmax_label' => $msg_minandmax_label, 
+          'msg_from_this_rule_occurrence' => '', 
+          'msg_text'  => $message,
+          'msg_is_custom'   => 'no'    //v1.07 
+           );
+         $this->vtmam_set_custom_msgs_status ('standardMsg');     //v1.07       
       }
   } 
   
@@ -798,7 +819,21 @@ class VTMAM_Apply_Rules{
      global $vtmam_setup_options, $vtmam_cart, $vtmam_rules_set, $vtmam_rule, $vtmam_info; 
      
      $vtmam_rules_set[$i]->rule_requires_cart_action = 'yes';
-   
+          
+      //v1.07 begin
+      if ( $vtmam_rules_set[$i]->custMsg_text > ' ') { //custom msg override              
+          $vtmam_cart->error_messages[] = array (
+            'msg_from_this_rule_id' => $vtmam_rules_set[$i]->post_id, 
+            'msg_minandmax_label' => $vtmam_rules_set[$i]->minandmaxSelected_selection, 
+            'msg_from_this_rule_occurrence' => $i, 
+            'msg_text'  => $vtmam_rules_set[$i]->custMsg_text,
+            'msg_is_custom'   => 'yes' 
+          );
+          $this->vtmam_set_custom_msgs_status('customMsg'); 
+          return;
+       }           
+      //v1.07 end
+         
      if  ( $vtmam_setup_options['show_error_messages_in_table_form'] == 'yes' ) {
         $vtmam_info['error_message_needed'] = 'yes';
         //   $vtmam_cart->error_messages[] = array ('msg_from_this_rule_id' => $vtmam_rules_set[$i]->post_id, 'msg_from_this_rule_occurrence' => $i,'msg_text'  => '' );  
@@ -964,7 +999,14 @@ class VTMAM_Apply_Rules{
         }                                                  
                 
         //queue the message to go back to the screen     
-        $vtmam_cart->error_messages[] = array ('msg_from_this_rule_id' => $vtmam_rules_set[$i]->post_id, 'msg_minandmax_label' => $vtmam_rules_set[$i]->minandmaxSelected_selection, 'msg_from_this_rule_occurrence' => $i, 'msg_text'  => $message ); 
+        $vtmam_cart->error_messages[] = array (
+          'msg_from_this_rule_id' => $vtmam_rules_set[$i]->post_id, 
+          'msg_minandmax_label' => $vtmam_rules_set[$i]->minandmaxSelected_selection, 
+          'msg_from_this_rule_occurrence' => $i, 
+          'msg_text'  => $message,
+          'msg_is_custom'   => 'no'    //v1.07 
+        ); 
+        $this->vtmam_set_custom_msgs_status ('standardMsg');     //v1.07
         
       }  //end text message formatting
     
@@ -979,6 +1021,37 @@ class VTMAM_Apply_Rules{
      
   } 
       
+   //*************************************  
+   //v1.07 new function 
+   //*************************************    
+   public function vtmam_set_custom_msgs_status ($message_state) { 
+      global $vtmam_cart;
+      switch( $vtmam_cart->error_messages_are_custom ) {  
+        case 'all':
+             if ($message_state == 'standardMsg') {
+                $vtmam_cart->error_messages_are_custom = 'some';
+             }
+          break;
+        case 'some':
+          break;          
+        case 'none':
+             if ($message_state == 'customMsg') {
+                $vtmam_cart->error_messages_are_custom = 'some';
+             }
+          break; 
+        default:  //no state set yet
+             if ($message_state == 'standardMsg') {
+                $vtmam_cart->error_messages_are_custom = 'none';
+             } else {
+                $vtmam_cart->error_messages_are_custom = 'all';
+             }
+          break;                    
+      }
+
+      return;
+   }      
+   //v1.07 end
+         
       
         
 public function vtmam_product_is_in_inpop_group ($i, $k) { 

@@ -108,8 +108,8 @@ register_taxonomy( 'vtmam_rule_category',
 		)
 	);
  
-	$role = get_role( 'administrator' );
-	$role->add_cap( 'read_vtmam-rule' );
+//	$role = get_role( 'administrator' );  v1.07 removed
+//	$role->add_cap( 'read_vtmam-rule' );  v1.07 removed
 }
 
   public function vtmam_add_dummy_rule_category () {
@@ -160,6 +160,7 @@ $vtmam_backbone = new VTMAM_Backbone;
     
   function vtmam_getSystemMemInfo() 
   {       
+      /* //V1.07
       $data = explode("\n", file_get_contents("/proc/meminfo"));
       $meminfo = array();
       foreach ($data as $line) {
@@ -167,6 +168,9 @@ $vtmam_backbone = new VTMAM_Backbone;
           $meminfo[$key] = trim($val);
       }
       return $meminfo;
+      */
+      $meminfo = array();
+      return $meminfo;      
   }
   
   } //end class

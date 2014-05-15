@@ -22,6 +22,7 @@
             div#vtmam-rule-minandmax,
             div#vtmam-rule-resources,
             div#vtmam-errmsg,
+            div#vtmam-rule-custom-message,    /* v1.07 */
             div#submitdiv 
             {display:block;}
             /* end fix */
@@ -33,6 +34,7 @@
             div#vtmam-rule-amount.postbox,
             div#vtmam-rule-msg.postbox,
             div#vtmam-rule-minandmax.postbox,
+            div#vtmam-rule-custom-message.postbox,     /* v1.07 */
             div#vtmam-errmsg.postbox {
               padding-bottom:10px;
               height:auto;
@@ -531,4 +533,43 @@
           }  
           #poststuff .postbox-container {
               width: 100%;
-          }    
+          }   
+          /*   ***********************   */
+          /*   v1.07 BEGIN */
+          /*   ***********************   */
+          .clear-left {clear:left;} 
+          #cust-msg-text-area,
+          #cust-msg-text-area h3,
+          #cust-msg-comment,
+          #cust-msg-optional,
+          #cust-msg-text {float:left;} 
+          .newColumn1 {
+                float: left;
+                width: 35%;
+            }  
+          .newColumn2 {
+                float: left;
+                width: 60%;
+            }
+          .rule_message {
+                float: left;
+                margin-bottom: 10px;
+                margin-left: 2%;
+                margin-top: 10px;
+                width: 95%;
+            }
+          #custMsg-select {width:auto;margin-top: 15px;}
+          .rule_message h3 {border:none !important; padding:none !important;margin-top:-5px !important;} 
+          #cust-msg-comment {    
+                font-size: 12px;
+                font-style: italic;
+                margin-left: 6%;
+               /* margin-top: -5px; */
+                }
+           #cust-msg-optional {
+                font-size: 10px;
+                font-style: italic;
+                margin-top: 5px;
+           }    
+           #cust-msg-text-label-area {margin-top:10px;}                        
+          /*   v1.07 END */             

@@ -25,7 +25,8 @@ class VTMAM_Cart {
     public $shipto_state;
     public $shipto_postcode;
     public $shipto_country;
-    
+
+    public $error_messages_are_custom;   //v1.07    
     
     
 	public function __construct(){
@@ -36,7 +37,8 @@ class VTMAM_Cart {
         array(
           'msg_from_this_rule_id'    => '',
           'msg_from_this_rule_occurrence' => '',
-          'msg_text'  => ''  
+          'msg_text'  => '',
+          'msg_is_custom'   => ''    //v1.07 
         )
         */
     ); 
@@ -57,7 +59,7 @@ class VTMAM_Cart {
     $this->shipto_state;
     $this->shipto_postcode;
     $this->shipto_country;
-             
+    $this->error_messages_are_custom;     //v1.07              
   }
   
 

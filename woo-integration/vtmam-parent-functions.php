@@ -5,15 +5,8 @@ WOO-specific functions
 Parent Plugin Integration
 */
 
-
-class VTMAM_Parent_Functions {
 	
-	public function __construct(){
-
-	}
-	
- 	
-	public function vtmam_load_vtmam_cart_for_processing(){
+	function vtmam_load_vtmam_cart_for_processing(){
       global $wpdb,  $woocommerce, $vtmam_cart, $vtmam_cart_item, $vtmam_info; 
       
       // from Woocommerce/templates/cart/mini-cart.php  and  Woocommerce/templates/checkout/review-order.php
@@ -50,6 +43,11 @@ class VTMAM_Parent_Functions {
               $vtmam_cart_item->quantity      = $cart_item['quantity'];
               $vtmam_cart_item->unit_price    = get_option( 'woocommerce_display_cart_prices_excluding_tax' ) == 'yes' || $woocommerce->customer->is_vat_exempt() ? $_product->get_price_excluding_tax() : $_product->get_price();
               
+              /*
+              $quantity = 1; //v1.08 vat fix
+              $vtmam_cart_item->unit_price    = get_option( 'woocommerce_display_cart_prices_excluding_tax' ) == 'yes' || $woocommerce->customer->is_vat_exempt() ? $_product->get_price_excluding_tax() : $_product->get_price_including_tax( $quantity ); //$_product->get_price();   //v1.08 vat fix
+              */ 
+                           
               $vtmam_cart_item->total_price   = $vtmam_cart_item->quantity * $vtmam_cart_item->unit_price;
               /*  *********************************
               ***  JUST the cat *ids* please...
@@ -79,7 +77,7 @@ class VTMAM_Parent_Functions {
 
  
    //  checked_list (o) - selection list from previous iteration of rule selection                                 
-    public function vtmam_fill_variations_checklist ($tax_class, $checked_list = NULL, $product_ID, $product_variation_IDs) { 
+    function vtmam_fill_variations_checklist ($tax_class, $checked_list = NULL, $product_ID, $product_variation_IDs) { 
         global $post;
         // *** ------------------------------------------------------------------------------------------------------- ***
         // additional code from:  woocommerce/admin/post-types/writepanels/writepanel-product-type-variable.php
@@ -144,7 +142,16 @@ class VTMAM_Parent_Functions {
             $output  .= '</label>';            
             $output  .= '</li>'; 
             echo $output ;             
-         }         
+         }   
+         
+         //wooCommerce 2.0 alteration...
+         if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
+            // Pre 2.0
+         } else {
+            // 2.0
+         }
+         
+               
         return;   
     }
     
@@ -152,7 +159,7 @@ class VTMAM_Parent_Functions {
   /* ************************************************
   **   Get all variations for product
   *************************************************** */
-  public function vtmam_get_variations_list($product_ID) {
+  function vtmam_get_variations_list($product_ID) {
         
     //sql from woocommerce/classes/class-wc-product.php
    $variations = get_posts( array(
@@ -176,7 +183,7 @@ class VTMAM_Parent_Functions {
   } 
   
   
-  public function vtmam_test_for_variations ($prod_ID) { 
+  function vtmam_test_for_variations ($prod_ID) { 
       
      $vartest_response = 'no';
      
@@ -204,6 +211,52 @@ class VTMAM_Parent_Functions {
      
      return ($vartest_response);   
   }     
+
+
+  //v1.07 begin
     
-} //end class
-$vtmam_parent_functions = new VTMAM_Parent_Functions;
+   function vtmam_format_money_element($price) { 
+      //from woocommerce/woocommerce-core-function.php   function woocommerce_price
+    	$return          = '';
+    	$num_decimals    = (int) get_option( 'woocommerce_price_num_decimals' );
+    	$currency_pos    = get_option( 'woocommerce_currency_pos' );
+    	$currency_symbol = get_woocommerce_currency_symbol();
+    	$decimal_sep     = wp_specialchars_decode( stripslashes( get_option( 'woocommerce_price_decimal_sep' ) ), ENT_QUOTES );
+    	$thousands_sep   = wp_specialchars_decode( stripslashes( get_option( 'woocommerce_price_thousand_sep' ) ), ENT_QUOTES );
+    
+    	$price           = apply_filters( 'raw_woocommerce_price', (double) $price );
+    	$price           = number_format( $price, $num_decimals, $decimal_sep, $thousands_sep );
+    
+    	if ( get_option( 'woocommerce_price_trim_zeros' ) == 'yes' && $num_decimals > 0 )
+    		$price = woocommerce_trim_zeros( $price );
+    
+    	//$return = '<span class="amount">' . sprintf( get_woocommerce_price_format(), $currency_symbol, $price ) . '</span>'; 
+
+    $current_version =  WOOCOMMERCE_VERSION;
+    if( (version_compare(strval('2'), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower     
+      $formatted = number_format( $price, $num_decimals, stripslashes( get_option( 'woocommerce_price_decimal_sep' ) ), stripslashes( get_option( 'woocommerce_price_thousand_sep' ) ) );
+      $formatted = $currency_symbol . $formatted;
+    } else {
+      $formatted = sprintf( get_woocommerce_price_format(), $currency_symbol, $price );
+    }
+          
+     return $formatted;
+   }
+   
+   //****************************
+   // Gets Currency Symbol from PARENT plugin   - only used in backend UI during rules update
+   //****************************   
+  function vtmam_get_currency_symbol() {    
+    return get_woocommerce_currency_symbol();  
+  } 
+
+  function vtmam_debug_options(){ 
+    global $vtmam_setup_options;
+    if ( ( isset( $vtmam_setup_options['debugging_mode_on'] )) &&
+         ( $vtmam_setup_options['debugging_mode_on'] == 'yes' ) ) {  
+      error_reporting(E_ALL);  
+    }  else {
+      error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED ); 
+    } 
+  }
+  //v1.07 end

@@ -3,26 +3,12 @@
 Plugin Name: VarkTech Min and Max Purchase for WooCommerce
 Plugin URI: http://varktech.com
 Description: An e-commerce add-on for WooCommerce, supplying minimum and maximum purchase functionality.
-Version: 1.06
+Version: 1.07
 Author: Vark
 Author URI: http://varktech.com
 */
 
-/*
-== Changelog ==
 
-= 1.06 - 2013-02-23 =
-* Bug Fix - "unexpected T_CLASS" - File admin/vtmin-rules-ui.php was corrupted, but the corruption only showed up on some hosts (?!).  Huge thanks to Don for allowing full access to his installation to debug.   
-
-= 1.05 - 2013-02-13 =
-* Bug Fix - Rule Add screen was being overwritten by some other plugins' global metaboxes - thanks to Dagofee for debug help
-* Bug Fix - PHP version check not being executed correctly on activation hook (minimum PHP version 5 required)
-* Bug Fix - Nuke and Repair buttons on Options screen were also affecting main Options settings, now fixed
- 
-= 1.0  - 2013-01-15 =
-* Initial Public Release
-
-*/
 
 /*
 ** define Globals 
@@ -40,8 +26,8 @@ class VTMAM_Controller{
 	
 	public function __construct(){    
    
-		define('VTMAM_VERSION',                               '1.06');
-    define('VTMAM_LAST_UPDATE_DATE',                      '2013-02-23');
+		define('VTMAM_VERSION',                               '1.07');
+    define('VTMAM_LAST_UPDATE_DATE',                      '2014-05-15');
     define('VTMAM_DIRNAME',                               ( dirname( __FILE__ ) ));
     define('VTMAM_URL',                                   plugins_url( '', __FILE__ ) );
     define('VTMAM_EARLIEST_ALLOWED_WP_VERSION',           '3.3');   //To pick up wp_get_object_terms fix, which is required for vtmam-parent-functions.php
@@ -56,6 +42,14 @@ class VTMAM_Controller{
     /*  =============+++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
     add_action('init',          array( &$this, 'vtmam_controller_init' )); 
     add_action('admin_init',    array( &$this, 'vtmam_admin_init' ));
+    
+    //v1.07 begin
+    add_action( 'draft_to_publish',       array( &$this, 'vtmam_admin_update_rule' )); 
+    add_action( 'auto-draft_to_publish',  array( &$this, 'vtmam_admin_update_rule' ));
+    add_action( 'new_to_publish',         array( &$this, 'vtmam_admin_update_rule' )); 			
+    add_action( 'pending_to_publish',     array( &$this, 'vtmam_admin_update_rule' ));    
+    //v1.07 end
+        
     add_action('save_post',     array( &$this, 'vtmam_admin_update_rule' ));
     add_action('delete_post',   array( &$this, 'vtmam_admin_delete_rule' ));    
     add_action('trash_post',    array( &$this, 'vtmam_admin_trash_rule' ));
@@ -80,6 +74,12 @@ class VTMAM_Controller{
     require ( VTMAM_DIRNAME . '/core/vtmam-rules-classes.php');
     require ( VTMAM_DIRNAME . '/woo-integration/vtmam-parent-functions.php');
     require ( VTMAM_DIRNAME . '/woo-integration/vtmam-parent-cart-validation.php');
+
+    //moved here v1.07
+    if (get_option( 'vtmam_setup_options' ) ) {
+      $vtmam_setup_options = get_option( 'vtmam_setup_options' );  //put the setup_options into the global namespace
+    }
+    vtmam_debug_options();  //v1.07
     
     if (is_admin()){
         require ( VTMAM_DIRNAME . '/admin/vtmam-setup-options.php');
@@ -108,9 +108,7 @@ class VTMAM_Controller{
     }
     
     wp_enqueue_script('jquery'); 
-    if (get_option( 'vtmam_setup_options' ) ) {
-      $vtmam_setup_options = get_option( 'vtmam_setup_options' );  //put the setup_options into the global namespace
-    }
+
 
   }
   

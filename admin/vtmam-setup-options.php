@@ -38,6 +38,20 @@ function vtmam_add_admin_menu_setup_items() {
     		array( &$this, 'vtmam_pro_upgrade_cntl' ) 				// The callback function used to render the options for this submenu item
     	);
   } 
+
+  //v1.07 begin
+  //Add a DUPLICATE custom tax URL to be in the main Pricing Deals menu as well as in the PRODUCT menu
+  //post_type=product => PARENT plugin post_type
+    add_submenu_page(
+		'edit.php?post_type=vtmam-rule',	// The ID of the top-level menu page to which this submenu item belongs
+		__( 'Min and Max Purchase Categories', 'vtmam' ), // The value used to populate the browser's title bar when the menu page is active                           
+		__( 'Min and Max Purchase Categories', 'vtmam' ),					// The label of this submenu item displayed in the menu
+		'administrator',					// What roles are able to access this submenu item
+		'edit-tags.php?taxonomy=vtmam_rule_category&post_type=product',	// The slug used to represent this submenu item
+    //                                          PARENT PLUGIN POST TYPE      
+		''  				// NO CALLBACK FUNCTION REQUIRED
+	);
+  //v1.07 end
   
 } 
 
@@ -498,7 +512,7 @@ function vtmam_initialize_options() {
 		'vtmam_setup_options_page'		// Page on which to add this section of options
 	);
 	
-   
+ /* v1.07    
     add_settings_field(	         //opt6
 		'use_this_currency_sign',						// ID used to identify the field throughout the theme
 		__( 'Select a Currency Sign', 'vtmam' ),			// The label to the left of the option interface element
@@ -509,7 +523,7 @@ function vtmam_initialize_options() {
 			__( 'Select a Currency Sign.', 'vtmam' )
 		)
 	);    
-  
+*/  
     add_settings_field(	        //opt7
 		'apply_multiple_rules_to_product',						// ID used to identify the field throughout the theme
 		__( 'Apply More Than 1 Rule to Each Product', 'vtmam' ),			// The label to the left of the option interface element
@@ -849,6 +863,7 @@ function vtmam_error_in_table_format_callback() {   //opt1
 	echo $html;
 }
 
+ /* v1.07 
 function vtmam_currency_sign_callback() {    //opt6
   $options = get_option( 'vtmam_setup_options' );
   $html = '<select id="currency_sign" name="vtmam_setup_options[use_this_currency_sign]">';
@@ -885,6 +900,7 @@ function vtmam_currency_sign_callback() {    //opt6
   
 	echo $html;
 }
+*/
 
 function vtmam_custom_error_msg_css_at_checkout_callback() {    //opt9
   $options = get_option( 'vtmam_setup_options' );

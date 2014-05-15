@@ -69,12 +69,13 @@ class VTMAM_Rules_UI {
       if ($post->ID > ' ' ) {
         $post_id =  $post->ID;
         $vtmam_rules_set   = get_option( 'vtmam_rules_set' ) ;
-        for($i=0; $i < sizeof($vtmam_rules_set); $i++) { 
+        $sizeof_rules_set = sizeof($vtmam_rules_set);
+        for($i=0; $i < $sizeof_rules_set; $i++) { 
            if ($vtmam_rules_set[$i]->post_id == $post_id) {
               $vtmam_rule = $vtmam_rules_set[$i];  //load vtmam-rule               
               $found_rule = true;
               $found_rule_index = $i; 
-              $i =  sizeof($vtmam_rules_set);
+              $i =  $sizeof_rules_set;
            }
         }
       } 
@@ -101,6 +102,7 @@ class VTMAM_Rules_UI {
       add_meta_box('vtmam-pop-in-select', __('Cart Search Criteria', 'vtmam'), array(&$this, 'vtmam_pop_in_select'), 'vtmam-rule', 'normal', 'high');                      
       add_meta_box('vtmam-pop-in-specifics', __('Rule Application Method', 'vtmam'), array(&$this, 'vtmam_pop_in_specifics'), 'vtmam-rule', 'normal', 'high');
       add_meta_box('vtmam-rule-amount', __('Quantity or Price Min or Max Amount', 'vtmam'), array(&$this, 'vtmam_rule_amount'), 'vtmam-rule', 'normal', 'high');
+      add_meta_box('vtmam-rule-custom-message', __('Custom Message', 'vtmam'), array(&$this, 'vtmam_rule_custom_message'), 'vtmam-rule', 'normal', 'default');  //v1.07      
       add_meta_box('vtmam-rule-id', __('Min or Max Purchase Rule ID', 'vtmam'), array(&$this, 'vtmam_rule_id'), 'vtmam-rule', 'side', 'low'); //low = below Publish box
       add_meta_box('vtmam-rule-resources', __('Resources', 'vtmam'), array(&$this, 'vtmam_rule_resources'), 'vtmam-rule', 'side', 'low'); //low = below Publish box 
             
@@ -170,7 +172,9 @@ class VTMAM_Rules_UI {
         </style>
                    
         <input type="hidden" id="vtmam_nonce" name="vtmam_nonce" value="<?php echo $vtmamNonce; ?>" />
-                            
+        
+        <input type="hidden" id="fullMsg" name="fullMsg" value="<?php echo $vtmam_info['default_full_msg'];?>" />  <?php //v1.07  ?>
+         
         <div class="column1" id="inpopDescrip">
             <h4> <?php _e('Choose how to look at the Candidate Population', 'vtmam') ?></h4>
             <p> <?php _e('Min and Max Amount rules will only look at the contents of the cart at checkout.
@@ -265,9 +269,8 @@ class VTMAM_Rules_UI {
               </div>
               <div id="inpopVarButton">
                  <?php
-                    $product_ID = $vtmam_rule->inpop_varProdID['value'];
-                    $vtmam_parent_functions = new VTMAM_Parent_Functions; 
-                    $product_variation_IDs = $vtmam_parent_functions->vtmam_get_variations_list($product_ID);
+                    $product_ID = $vtmam_rule->inpop_varProdID['value']; 
+                    $product_variation_IDs = vtmam_get_variations_list($product_ID);
                     /* ************************************************
                     **   Get Variations Button for Rule screen
                     *     ==>>> get the product id from $_REQUEST['varProdID'];  in the receiving ajax routine. 
@@ -301,7 +304,7 @@ class VTMAM_Rules_UI {
               // ********************************
             }                               
           ?>
-           </div>  <?php//end variations-in ?>
+           </div>  <?php //end variations-in ?>
         </div>  <?php //end inpopVarProdID ?>       
 
        <div class="<?php //echo $groupPop_vis ?> " id="vtmam-pop-in-cntl">                                                  
@@ -331,7 +334,7 @@ class VTMAM_Rules_UI {
           // ********************************
           ?>
         
-        </div>  <?php//end prodcat-in ?>
+        </div>  <?php //end prodcat-in ?>
         <h4 class="and-or"><?php _e('Or', 'vtmam') //('And / Or', 'vtmam')?></h4>
         <div id="rulecat-in">
           <h3><?php _e('Min and Max Purchase Categories', 'vtmam')?></h3>
@@ -342,7 +345,7 @@ class VTMAM_Rules_UI {
           // ********************************
           ?> 
                          
-        </div>  <?php//end rulecat-in ?>
+        </div>  <?php //end rulecat-in ?>
         
         
         <div id="and-or-role-div">
@@ -594,7 +597,25 @@ class VTMAM_Rules_UI {
         
       <?php
   } 
-  
+   
+   //V1.07 New
+   //Custom Message overriding default messaging                                                                        
+    public    function vtmam_rule_custom_message() {
+        global $post, $vtmam_info, $vtmam_rule, $vtmam_rules_set;                   
+          ?>
+        <div class="rule_message clear-left" id="cust-msg-text-area">
+           <span class="newColumn1" id=cust-msg-text-label-area>
+              <h3><?php _e('Custom Message Text', 'vtmam')?></h3>
+              <span id='cust-msg-optional'>(optional)</span>
+              <span class="clear-left" id='cust-msg-comment'>(overrides default message)</span>
+           </span>   
+            <textarea name="cust-msg-text" type="text" class="msg-text newColumn2" id="cust-msg-text" cols="50" rows="2"><?php echo $vtmam_rule->custMsg_text; ?></textarea>          
+       </div>
+
+      <?php
+  }  
+  //v1.07 end
+              
                                                                             
     public    function vtmam_rule_id( ) {
         global $post;           
@@ -649,8 +670,7 @@ source: http://www.ilovecolors.com.ar/avoid-hierarchical-taxonomies-to-loose-hie
                   $vtmam_checkbox_classes->vtmam_fill_roles_checklist($tax_class, $checked_list);
                 break;
               case 'variations':                  
-                  $vtmam_parent_functions = new VTMAM_Parent_Functions;
-                  $vtmam_parent_functions->vtmam_fill_variations_checklist($tax_class, $checked_list, $product_ID, $product_variation_IDs);                            
+                  vtmam_fill_variations_checklist($tax_class, $checked_list, $product_ID, $product_variation_IDs);                            
                 break;
               default:  //product category or vtmam category...
                   $this->vtmam_build_checkbox_contents ($taxonomy, $tax_class, $checked_list);                             
