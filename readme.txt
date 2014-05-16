@@ -4,7 +4,7 @@ Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocom
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
 Tested up to: 3.9.1
-Stable tag: 1.07
+Stable tag: 1.07.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -155,6 +155,9 @@ Please review the following printed and video documentation.
 
 == Changelog ==
 
+= 1.07.1 - 2014-05-16 =
+* Fix - currency sign issues
+
 = 1.07 - 2014-05-15 =
 * Enhancement - change currency sign and currency formatting to follow parent plugin, removed setting from this plugin
 * Enhancement - Add Min and Max Purchase categories to Plugin Submenu
@@ -178,6 +181,9 @@ Please review the following printed and video documentation.
 
 
 == Upgrade Notice ==
+
+= 1.07.1 - 2014-05-16 =
+* Fix - currency sign issues
 
 = 1.07 - 2014-05-15 =
 * Enhancement - change currency sign and currency formatting to follow parent plugin, removed setting from this plugin

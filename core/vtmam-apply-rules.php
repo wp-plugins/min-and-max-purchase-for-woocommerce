@@ -533,7 +533,7 @@ class VTMAM_Apply_Rules{
      $message_line .= __('</span>', 'vtmam'); //end "quantity" end "color-grp"
      
      $message_line .= __('<span class="price-column">', 'vtmam');
-     $message_line .= $this->vtmam_format_money_element($vtmam_cart->cart_items[$k]->unit_price);
+     $message_line .= vtmam_format_money_element($vtmam_cart->cart_items[$k]->unit_price);
      //$message_line .= $vtmam_cart->cart_items[$k]->unit_price;
      $message_line .= __('</span>', 'vtmam'); //end "price"
      
@@ -548,7 +548,7 @@ class VTMAM_Apply_Rules{
         $message_line .= __('<span class="total-column">', 'vtmam');   
       }
      //$message_line .= $vtmam_cart->cart_items[$k]->total_price;
-     $message_line .= $this->vtmam_format_money_element($vtmam_cart->cart_items[$k]->total_price);
+     $message_line .= vtmam_format_money_element($vtmam_cart->cart_items[$k]->total_price);
      if ( ($vtmam_rules_set[$i]->amtSelected_selection == 'currency') && ($vtmam_info['bold_the_error_amt_on_detail_line'] == 'yes') ) {
        $message_line .= __(' &nbsp;(Error)', 'vtmam');
      }     
@@ -596,7 +596,7 @@ class VTMAM_Apply_Rules{
         $message_totals .= $vtmam_info['cart_color_cnt'];
         $message_totals .= __('">(', 'vtmam');
         //grp total price
-        $message_totals .= $this->vtmam_format_money_element($vtmam_info['cart_grp_info']['price']);
+        $message_totals .= vtmam_format_money_element($vtmam_info['cart_grp_info']['price']);
         $message_totals .= __(') Error', 'vtmam'); 
       } else {
         $message_totals .= __('<span class="quantity-column">', 'vtmam');
@@ -629,7 +629,7 @@ class VTMAM_Apply_Rules{
                                            'price'    => 0
                                           );
    }
-   
+/* v1.07.1   
    public function vtmam_format_money_element($money) { 
      global $vtmam_setup_options; 
            
@@ -673,7 +673,7 @@ class VTMAM_Apply_Rules{
     	}
     	return $currency_symbol;
   } 
-           
+*/           
    public function vtmam_table_text_line ($i){
       global $vtmam_setup_options, $vtmam_cart, $vtmam_rules_set, $vtmam_rule, $vtmam_info;
       
@@ -708,7 +708,7 @@ class VTMAM_Apply_Rules{
       $message_text .= __('">', 'vtmam');
       
       if ($vtmam_rules_set[$i]->amtSelected_selection == 'currency') {
-        $message_text .= $this->vtmam_format_money_element($vtmam_rules_set[$i]->minandmax_amt['value']);
+        $message_text .= vtmam_format_money_element($vtmam_rules_set[$i]->minandmax_amt['value']);
         if ($vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum') {
             $message_text .= __('</span> required ', 'vtmam');     //if branch end "color-grp"
         } else {
@@ -905,7 +905,7 @@ class VTMAM_Apply_Rules{
           
           if ($vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum') { 
             $message .= __('<br /><span class="errmsg-text">A minimum of &nbsp;<span class="errmsg-amt-required"> ', 'vtmam'); 
-            $message .= $this->vtmam_format_money_element( $vtmam_rules_set[$i]->minandmax_amt['value'] );
+            $message .= vtmam_format_money_element( $vtmam_rules_set[$i]->minandmax_amt['value'] );
             switch( $vtmam_rules_set[$i]->specChoice_in_selection ) {
             case 'all': 
                 $message .= __('</span> &nbsp;for the total group must be purchased.  The current total ', 'vtmam');
@@ -920,7 +920,7 @@ class VTMAM_Apply_Rules{
             }                                                      
           } else {
             $message .= __('<br /><span class="errmsg-text">A maximum of &nbsp;<span class="errmsg-amt-required"> ', 'vtmam'); 
-            $message .= $this->vtmam_format_money_element( $vtmam_rules_set[$i]->minandmax_amt['value'] );
+            $message .= vtmam_format_money_element( $vtmam_rules_set[$i]->minandmax_amt['value'] );
             switch( $vtmam_rules_set[$i]->specChoice_in_selection ) {
             case 'all': 
                 $message .= __('</span> &nbsp;for the total group may be purchased.  The current total ', 'vtmam');
@@ -935,7 +935,7 @@ class VTMAM_Apply_Rules{
             }                            
           }                                                  
           
-          $message .= $this->vtmam_format_money_element( $vtmam_rules_set[$i]->errProds_total_price );
+          $message .= vtmam_format_money_element( $vtmam_rules_set[$i]->errProds_total_price );
           $message .= __(' </span></span> ', 'vtmam');
           
         } else {
