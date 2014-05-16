@@ -93,7 +93,15 @@ class VTMAM_Parent_Cart_Validation {
             break;           
           default:  //'none' / no state set yet
                $this->vtmam_display_standard_messages();
-               wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                     
+              //v1.07.2 begin
+              $current_version =  WOOCOMMERCE_VERSION;
+              if( (version_compare(strval('2.1.0'), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower     
+                $woocommerce->add_error(  __('Purchase error found.', 'vtmam') );  //supplies an error msg and prevents payment from completing 
+              } else {
+               //added in woo 2.1
+                wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );   //supplies an error msg and prevents payment from completing 
+              } 
+              //v1.07.2  end            
             break;                    
         }
 
@@ -122,7 +130,15 @@ class VTMAM_Parent_Cart_Validation {
     
     for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
        if ($vtmam_cart->error_messages[$i]['msg_is_custom'] == 'yes') {  //v1.08 ==>> show custom messages here...
-          wc_add_notice( $vtmam_cart->error_messages[$i]['msg_text'], $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                
+          //v1.07.2 begin
+          $current_version =  WOOCOMMERCE_VERSION;
+          if( (version_compare(strval('2.1.0'), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower     
+            $woocommerce->add_error(  $vtmam_cart->error_messages[$i]['msg_text'] );  //supplies an error msg and prevents payment from completing 
+          } else {
+           //added in woo 2.1
+            wc_add_notice( $vtmam_cart->error_messages[$i]['msg_text'], $notice_type = 'error' );   //supplies an error msg and prevents payment from completing 
+          } 
+          //v1.07.2  end       
        } //end if
     }  //end 'for' loop    
   }   
@@ -136,11 +152,13 @@ class VTMAM_Parent_Cart_Validation {
     vtmam_debug_options();  //v1.07     
     //input and output to the apply_rules routine in the global variables.
     //    results are put into $vtmam_cart
-    
+   
+   /* v1.07.2  cart not there yet
     if ( $vtmam_cart->error_messages_processed == 'yes' ) {  
       wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                      
       return;
     }
+    */
     
      $vtmam_apply_rules = new VTMAM_Apply_Rules;   
     
@@ -174,8 +192,29 @@ class VTMAM_Parent_Cart_Validation {
       $vtmam_cart->error_messages_processed = 'yes';
       
       //tell WOO that an error has occurred, and not to proceed further
-      wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );  //supplies an error msg and prevents payment from completing   v1.07 change to use wc_add_notice                      
-
+      //v1.07.2 changes begin
+        switch( $vtmam_cart->error_messages_are_custom ) {  
+          case 'all':
+               $this->vtmam_display_custom_messages();
+            break;
+          case 'some':    
+               $this->vtmam_display_custom_messages();
+               $this->vtmam_display_standard_messages();
+            break;           
+          default:  //'none' / no state set yet
+               $this->vtmam_display_standard_messages();
+              //v1.07.2 begin
+              $current_version =  WOOCOMMERCE_VERSION;
+              if( (version_compare(strval('2.1.0'), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower     
+                $woocommerce->add_error(  __('Purchase error found.', 'vtmam') );  //supplies an error msg and prevents payment from completing 
+              } else {
+               //added in woo 2.1
+                wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );   //supplies an error msg and prevents payment from completing 
+              } 
+              //v1.07.2  end            
+            break;                    
+        }
+        //v1.07.2 
     }  
    
   }  

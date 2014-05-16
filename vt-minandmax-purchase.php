@@ -3,7 +3,7 @@
 Plugin Name: VarkTech Min and Max Purchase for WooCommerce
 Plugin URI: http://varktech.com
 Description: An e-commerce add-on for WooCommerce, supplying minimum and maximum purchase functionality.
-Version: 1.07.1
+Version: 1.07.2
 Author: Vark
 Author URI: http://varktech.com
 */
@@ -26,7 +26,7 @@ class VTMAM_Controller{
 	
 	public function __construct(){    
    
-		define('VTMAM_VERSION',                               '1.07.1');
+		define('VTMAM_VERSION',                               '1.07.2');
     define('VTMAM_LAST_UPDATE_DATE',                      '2014-05-16');
     define('VTMAM_DIRNAME',                               ( dirname( __FILE__ ) ));
     define('VTMAM_URL',                                   plugins_url( '', __FILE__ ) );
