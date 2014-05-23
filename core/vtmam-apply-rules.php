@@ -360,10 +360,14 @@ class VTMAM_Apply_Rules{
     }
     
     if ( $vtmam_setup_options['debugging_mode_on'] == 'yes' ) {
-      echo '<pre>'.print_r($vtmam_rules_set, true).'</pre>' ; 
-      echo '<pre>'.print_r($vtmam_cart, true).'</pre>' ;
-      echo '<pre>'.print_r($vtmam_setup_options, true).'</pre>' ;
-      echo '<pre>'.print_r($vtmam_info, true).'</pre>' ; 
+      error_log( print_r(  '$vtmam_info', true ) );
+      error_log( var_export($vtmam_info, true ) );
+      error_log( print_r(  '$vtmam_rules_set', true ) );
+      error_log( var_export($vtmam_rules_set, true ) );
+      error_log( print_r(  '$vtmam_cart', true ) );
+      error_log( var_export($vtmam_cart, true ) );
+      error_log( print_r(  '$vtmam_setup_options', true ) );
+      error_log( var_export($vtmam_setup_options, true ) );  
     }
     
   }  //end vtmam_minandmax_purchase_check
@@ -1009,7 +1013,7 @@ class VTMAM_Apply_Rules{
         $this->vtmam_set_custom_msgs_status ('standardMsg');     //v1.07
         
       }  //end text message formatting
-    
+      /*
       if ( $vtmam_setup_options['debugging_mode_on'] == 'yes' ){   
         echo '$message'; echo '<pre>'.print_r($message, true).'</pre>' ;
         echo '$vtmam_rules_set[$i]->errProds_qty = '; echo '<pre>'.print_r($vtmam_rules_set[$i]->errProds_qty, true).'</pre>' ;
@@ -1017,7 +1021,7 @@ class VTMAM_Apply_Rules{
         echo '$vtmam_rules_set[$i]->errProds_names = '; echo '<pre>'.print_r($vtmam_rules_set[$i]->errProds_names, true).'</pre>' ;
         echo '$vtmam_rules_set[$i]->errProds_cat_names = '; echo '<pre>'.print_r($vtmam_rules_set[$i]->errProds_cat_names, true).'</pre>' ;   
       } 
-
+      */
      
   } 
       
@@ -1074,12 +1078,12 @@ public function vtmam_product_is_in_inpop_group ($i, $k) {
     	global $vtmam_cart, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $vtmam_setup_options;     
       if ( sizeof($vtmam_rules_set[$i]->role_in_checked) > 0 ) {
             if (in_array($this->vtmam_get_current_user_role(), $vtmam_rules_set[$i]->role_in_checked )) {   //if role is in previously checked_list
-                  if ( $vtmam_setup_options['debugging_mode_on'] == 'yes' ){ 
+                 /* if ( $vtmam_setup_options['debugging_mode_on'] == 'yes' ){ 
                     echo 'current user role= <pre>'.print_r($this->vtmam_get_current_user_role(), true).'</pre>' ;
                     echo 'rule id= <pre>'.print_r($vtmam_rules_set[$i]->post_id, true).'</pre>' ;  
                     echo 'role_in_checked= <pre>'.print_r($vtmam_rules_set[$i]->role_in_checked, true).'</pre>' ; 
                     echo 'i= '.$i . '<br>'; echo 'k= '.$k . '<br>';
-                  }
+                  }  */
               return true;                                
             } 
       } 

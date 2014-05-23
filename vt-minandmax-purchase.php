@@ -3,7 +3,7 @@
 Plugin Name: VarkTech Min and Max Purchase for WooCommerce
 Plugin URI: http://varktech.com
 Description: An e-commerce add-on for WooCommerce, supplying minimum and maximum purchase functionality.
-Version: 1.07.2
+Version: 1.07.3
 Author: Vark
 Author URI: http://varktech.com
 */
@@ -26,7 +26,8 @@ class VTMAM_Controller{
 	
 	public function __construct(){    
    
-		define('VTMAM_VERSION',                               '1.07.2');
+		define('VTMAM_VERSION',                               '1.07.3');
+    define('VTMAM_MINIMUM_PRO_VERSION',                   '1.07.1'); //V1.07.3 
     define('VTMAM_LAST_UPDATE_DATE',                      '2014-05-16');
     define('VTMAM_DIRNAME',                               ( dirname( __FILE__ ) ));
     define('VTMAM_URL',                                   plugins_url( '', __FILE__ ) );
@@ -34,6 +35,7 @@ class VTMAM_Controller{
     define('VTMAM_EARLIEST_ALLOWED_PHP_VERSION',          '5');
     define('VTMAM_PLUGIN_SLUG',                           plugin_basename(__FILE__));
     define('VTMAM_PLUGIN_PATH',                            WP_PLUGIN_DIR . '/min-and-max-purchase-for-woocommerce/vt-minandmax-purchase.php/');
+    define('VTMAM_PRO_PLUGIN_NAME',                      'VarkTech Min and Max Purchase Pro for WooCommerce');    //V1.07.3
     
     require ( VTMAM_DIRNAME . '/woo-integration/vtmam-parent-definitions.php');
    
@@ -95,7 +97,14 @@ class VTMAM_Controller{
         
         require ( VTMAM_DIRNAME . '/admin/vtmam-checkbox-classes.php');
         require ( VTMAM_DIRNAME . '/admin/vtmam-rules-delete.php');
-     
+        
+        //V1.07.3begin
+        if ( (defined('VTMAM_PRO_DIRNAME')) &&
+             (version_compare(VTMAM_PRO_VERSION, VTMAM_MINIMUM_PRO_VERSION) < 0) ) {    //'<0' = 1st value is lower  
+          add_action( 'admin_notices',array(&$this, 'vtmam_admin_notice_version_mismatch') );            
+        }
+        //V1.07.3begin 
+           
     } 
     
     //unconditional branch for these resources needed for WOOCommerce, at "place order" button time
@@ -333,7 +342,24 @@ class VTMAM_Controller{
     }
      
   }
-  
+ 
+
+   //V1.07.3 begin                          
+   public function vtmam_admin_notice_version_mismatch() {
+      $message  =  '<strong>' . __('Please also update plugin: ' , 'vtmam') . ' &nbsp;&nbsp;'  .VTMAM_PRO_PLUGIN_NAME . '</strong>' ;
+      $message .=  '<br>&nbsp;&nbsp;&bull;&nbsp;&nbsp;' . __('Your Pro Version = ' , 'vtmam') .VTMAM_PRO_VERSION. ' &nbsp;&nbsp;' . __(' The Minimum Required Pro Version = ' , 'vtmam') .VTMAM_MINIMUM_PRO_VERSION ;      
+      $message .=  '<br>&nbsp;&nbsp;&bull;&nbsp;&nbsp;' . __('Please delete the old Pro plugin from your installation via ftp.'  , 'vtmam');
+      $message .=  '<br>&nbsp;&nbsp;&bull;&nbsp;&nbsp;' . __('Go to ', 'vtmam');
+      $message .=  '<a target="_blank" href="http://www.varktech.com/download-pro-plugins/">Varktech Downloads</a>';
+      $message .=   __(', download and install the newest <strong>'  , 'vtmam') .VTMAM_PRO_PLUGIN_NAME. '</strong>' ;
+      
+      $admin_notices = '<div id="message" class="error fade" style="background-color: #FFEBE8 !important;"><p>' . $message . ' </p></div>';
+      echo $admin_notices;
+      return;    
+  }   
+   //V1.07.3 end    
+
+   
   /* ************************************************
   **   Admin - **Uninstall** Hook and cleanup
   *************************************************** */ 
