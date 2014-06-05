@@ -57,6 +57,9 @@ Parent Plugin Integration
         
               //add cart_item to cart array
               $vtmam_cart->cart_items[]       = $vtmam_cart_item;
+
+              $vtmam_cart->purchaser_ip_address = $vtmam_info['purchaser_ip_address']; // v1.07.4
+              
 				    }
         } //	endforeach;
         

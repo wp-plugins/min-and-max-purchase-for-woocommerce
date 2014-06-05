@@ -169,6 +169,22 @@ class VTMAM_Rules_UI {
             display:none;
            }
            #vtmam-pop-in-cntl {margin-bottom:15px;}
+            /*v1.06 begin*/
+           .pro-anchor {
+              border: 1px solid #CCCCCC;
+              clear: both;
+              color: #000000;
+              float: left;
+              font-size: 14px;
+              margin-bottom: 10px;
+              margin-left: 2%;
+              margin-top: 20px;
+              padding: 5px 10px;
+              text-decoration: none;
+              width: auto;        
+           }
+           #inpopDescrip-more-help {color: #0074A2 !important;font-size: 15px;}
+           /*v1.06 end*/          
         </style>
                    
         <input type="hidden" id="vtmam_nonce" name="vtmam_nonce" value="<?php echo $vtmamNonce; ?>" />
@@ -181,13 +197,7 @@ class VTMAM_Rules_UI {
             Min and Max Amount rules define a candidate group within the cart. The Free version of the plugin
             applies only to logged-in user membership status.', 'vtmam') ?>           
             </p>
-            <a id="inpopDescrip-more" class="help-anchor" href="javascript:void(0);">Pro Version - <span id="inpopDescrip-more-help">More Info</span></a>
-            <p id="inpopDescrip-descrip" class="help-text"> <?php _e('The Pro version has other options available.
-            You can choose to apply the rule to the entire contents of the cart, or you can also have the rule 
-            look only at those products in a particular category or category groups, or have the rule apply to a 
-            single, specified product. ', 'vtmam') ?> 
-            <a  href=" <?php echo VTMAM_PURCHASE_PRO_VERSION_BY_PARENT ; ?> "  title="Access Plugin Documentation"> Upgrade to Pro Version</a>          
-            </p>
+            <?php //v1.06 msg moved below ?>
         </div>
 
         
@@ -307,6 +317,11 @@ class VTMAM_Rules_UI {
            </div>  <?php //end variations-in ?>
         </div>  <?php //end inpopVarProdID ?>       
 
+        
+        <?php //v1.06 moved here, changed msg?>
+        <a id="" class="pro-anchor" target="_blank"  href="<?php echo VTMAM_PURCHASE_PRO_VERSION_BY_PARENT ; ?>">( Greyed-out Options are available in the <span id="inpopDescrip-more-help">Pro Version</span> &nbsp;)</a>
+          
+          
        <div class="<?php //echo $groupPop_vis ?> " id="vtmam-pop-in-cntl">                                                  
          <a id="pop-in-more" class="help-anchor" href="javascript:void(0);">Selection Groups - <span id="pop-in-more-help">More Info</span></a>
          <p id="pop-in-descrip" class="help-text"><?php _e("Role/Membership is used within Wordpress to control access and capabilities, when a role is given to a user.  

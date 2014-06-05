@@ -35,7 +35,8 @@ class VTMAM_Parent_Cart_Validation {
     add_action( 'woocommerce_before_checkout_process', array(&$this, 'vtmam_woo_place_order_cntl') );   
     
     //save info to Lifetime tables following purchase       
-    add_action('woocommerce_checkout_order_processed', array( &$this, 'vtmam_post_purchase_save_info' ));
+     add_action('woocommerce_checkout_order_processed', array( &$this, 'vtmam_pre_purchase_save_session' ) );  // v1.07.4
+     add_action('woocommerce_thankyou',                 array( &$this, 'vtmam_post_purchase_save_info' ) );    // v1.07.4  
     /*  =============+ */      
                                                                                 
 	}
@@ -370,6 +371,28 @@ class VTMAM_Parent_Cart_Validation {
   } 
  
  
+  // v1.07.4 begin
+  /* ************************************************
+  **   before purchase, save info to session
+  *************************************************** */ 
+  function vtmam_pre_purchase_save_session() { 
+    global $post, $wpdb, $vtmam_setup_options, $vtmam_cart, $vtmam_rules_set, $vtmam_rule, $vtmam_info;
+              
+      if(!isset($_SESSION)){
+        session_start();
+        header("Cache-Control: no-cache");
+        header("Pragma: no-cache");
+      } 
+      $data_chain = array();
+      $data_chain[] = $vtmam_rules_set;
+      $data_chain[] = $vtmam_cart;
+      $data_chain[] = $vtmam_info;
+      $_SESSION['data_chain'] = serialize($data_chain);  
+    
+    return; 
+    
+  } 
+  // v1.07.4 end
   
   /* ************************************************
   **   After purchase, store max purchase info for lifetime rules on db
@@ -382,5 +405,32 @@ class VTMAM_Parent_Cart_Validation {
    
   } // end  function vtmam_store_max_purchaser_info() 
  
+ 
+   // v1.07.4 begin
+   function vtmam_get_data_chain() {
+         
+      if(!isset($_SESSION)){
+        session_start();
+        header("Cache-Control: no-cache");
+        header("Pragma: no-cache");
+      }   
+      global $vtmam_rules_set, $vtmam_cart, $vtmam_info;
+      
+      if (isset($_SESSION['data_chain'])) {
+        $data_chain      = unserialize($_SESSION['data_chain']);
+      } else {
+        $data_chain = array();
+      }
+         
+      if ($vtmam_rules_set == '') {        
+        $vtmam_rules_set = $data_chain[0];
+        $vtmam_cart      = $data_chain[1];
+        $vtmam_info      = $data_chain[2];
+      }
+
+      return $data_chain;
+   }
+   // v1.07.4  end
+    
 } //end class
 $vtmam_parent_cart_validation = new VTMAM_Parent_Cart_Validation;

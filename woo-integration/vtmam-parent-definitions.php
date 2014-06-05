@@ -13,12 +13,12 @@ class VTMAM_Parent_Definitions {
     define('VTMAM_PARENT_PLUGIN_NAME',                      'WooCommerce');
     define('VTMAM_EARLIEST_ALLOWED_PARENT_VERSION',         '1.0');
     define('VTMAM_TESTED_UP_TO_PARENT_VERSION',             '1.6.6');
-    define('VTMAM_DOCUMENTATION_PATH_PRO_BY_PARENT',        'http://www.varktech.com/woocommerce/minimum-purchase-pro-for-woocommerce/?active_tab=tutorial');                                                                                                     //***
-    define('VTMAM_DOCUMENTATION_PATH_FREE_BY_PARENT',       'http://www.varktech.com/woocommerce/minimum-purchase-for-woocommerce/?active_tab=tutorial');      
-    define('VTMAM_INSTALLATION_INSTRUCTIONS_BY_PARENT',     'http://www.varktech.com/woocommerce/minimum-purchase-for-woocommerce/?active_tab=instructions');
-    define('VTMAM_PRO_INSTALLATION_INSTRUCTIONS_BY_PARENT', 'http://www.varktech.com/woocommerce/minimum-purchase-pro-for-woocommerce/?active_tab=instructions');
-    define('VTMAM_PURCHASE_PRO_VERSION_BY_PARENT',          'http://www.varktech.com/woocommerce/minimum-purchase-pro-for-woocommerce/');
-    define('VTMAM_DOWNLOAD_FREE_VERSION_BY_PARENT',         'http://wordpress.org/extend/plugins/minimum-purchase-for-woocommerce/');
+    define('VTMAM_DOCUMENTATION_PATH_PRO_BY_PARENT',        'http://www.varktech.com/woocommerce/min-and-max-purchase-pro-for-woocommerce/?active_tab=tutorial');                                                                                                     //***
+    define('VTMAM_DOCUMENTATION_PATH_FREE_BY_PARENT',       'http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/?active_tab=tutorial');      
+    define('VTMAM_INSTALLATION_INSTRUCTIONS_BY_PARENT',     'http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/?active_tab=instructions');
+    define('VTMAM_PRO_INSTALLATION_INSTRUCTIONS_BY_PARENT', 'http://www.varktech.com/woocommerce/min-and-max-purchase-pro-for-woocommerce/?active_tab=instructions');
+    define('VTMAM_PURCHASE_PRO_VERSION_BY_PARENT',          'http://www.varktech.com/woocommerce/min-and-max-purchase-pro-for-woocommerce/');
+    define('VTMAM_DOWNLOAD_FREE_VERSION_BY_PARENT',         'http://wordpress.org/extend/plugins/min-and-max-purchase-for-woocommerce/');
     
     //html default selector locations in checkout where error message will display before.
     define('VTMAM_CHECKOUT_PRODUCTS_SELECTOR_BY_PARENT',    '.shop_table');        // PRODUCTS TABLE on BOTH cart page and checkout page
@@ -61,6 +61,7 @@ class VTMAM_Parent_Definitions {
         'purch_hist_product_qty_total'  => '',          
         'get_purchaser_info' => '',          
         'purch_hist_done' => '',
+        'purchaser_ip_address' => esc_sql($_SERVER['REMOTE_ADDR']), // v1.07.4
         'default_full_msg'  => $default_full_msg //v1.07  
       );
 
