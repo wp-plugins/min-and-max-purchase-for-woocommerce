@@ -61,11 +61,28 @@ class VTMAM_Parent_Definitions {
         'purch_hist_product_qty_total'  => '',          
         'get_purchaser_info' => '',          
         'purch_hist_done' => '',
-        'purchaser_ip_address' => esc_sql($_SERVER['REMOTE_ADDR']), // v1.07.4
+        'purchaser_ip_address' => $this->vtmam_get_ip_address(), // v1.07.4
         'default_full_msg'  => $default_full_msg //v1.07  
       );
 
 	}
 
+ // v1.07.4 being	
+  //from http://stackoverflow.com/questions/15699101/get-client-ip-address-using-php
+  public  function  vtmam_get_ip_address() {
+    foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+        if (array_key_exists($key, $_SERVER) === true){
+            foreach (explode(',', $_SERVER[$key]) as $ip){
+                $ip = trim($ip); // just to be safe
+
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                    return $ip;
+                }
+            }
+        }
+    }
+  }
+ // v1.07.4 end	
+ 
 } //end class
 $vtmam_parent_definitions = new VTMAM_Parent_Definitions;
