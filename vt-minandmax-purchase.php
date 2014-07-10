@@ -20,7 +20,10 @@ Author URI: http://varktech.com
    $vtmam_cart_item;
    $vtmam_setup_options;
 
-
+   
+   //initial setup only, overriden later in function vtprd_debug_options
+   error_reporting(E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR); //v1.07.4
+         
      
 class VTMAM_Controller{
 	
