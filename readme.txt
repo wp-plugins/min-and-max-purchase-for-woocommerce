@@ -3,7 +3,7 @@ Contributors: vark
 Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
-Tested up to: 3.9.1
+Tested up to: 4.0
 Stable tag: 1.07.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,6 +23,10 @@ Fully tested with WooCommerce 2.1+ .
 = Now with Custom Messaging! =
 You can enter your own Custom Minimum Purchase Messages by Rule 
 
+= Unparalleled Customer Service =
+
+*   Customer Service is as important as the plugin functionality itself
+*   [Support](http://www.varktech.com/support/) is open 7 days for questions and 1-on-1 assistance.
 
 = Introductory Video =
 [youtube http://www.youtube.com/watch?v=nunFxppztlk]
