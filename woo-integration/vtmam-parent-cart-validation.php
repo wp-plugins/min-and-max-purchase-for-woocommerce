@@ -120,6 +120,7 @@ class VTMAM_Parent_Cart_Validation {
     //insert error messages into checkout page
     add_action( "wp_enqueue_scripts", array($this, 'vtmam_enqueue_error_msg_css') );
     add_action('wp_head', array(&$this, 'vtmam_display_rule_error_msg_at_checkout') );  //JS to insert error msgs 
+    
     $vtmam_cart->error_messages_processed = 'yes';
   } 
 
@@ -188,7 +189,7 @@ class VTMAM_Parent_Cart_Validation {
       $woo_apply_checkout_cntl = 'yes';
       
       //display VTMAM error msgs   
-      $this->vtmam_display_rule_error_msg_at_checkout();      
+      //mwnTEST  $this->vtmam_display_rule_error_msg_at_checkout();      
       
       $vtmam_cart->error_messages_processed = 'yes';
       
@@ -201,18 +202,34 @@ class VTMAM_Parent_Cart_Validation {
           case 'some':    
                $this->vtmam_display_custom_messages();
                $this->vtmam_display_standard_messages();
+               
+               //v1.07.5 begin  
+               //  Fixes an AJAX issue - with standard msgs, the inserted JS never gets where it needs to go.
+               //     rather than do the standard method, just show  the msgs and FORCE an AJAX exit.
+               $this->vtmam_display_rule_error_msg_at_checkout('yes');
+               exit(); 
+               //v1.07.5 end
+                             
             break;           
           default:  //'none' / no state set yet
                $this->vtmam_display_standard_messages();
+                             
               //v1.07.2 begin
               $current_version =  WOOCOMMERCE_VERSION;
               if( (version_compare(strval('2.1.0'), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower     
-                $woocommerce->add_error(  __('Purchase error found.', 'vtmam') );  //supplies an error msg and prevents payment from completing 
+                $woocommerce->add_error(  __('Purchase error found .', 'vtmam') );  //supplies an error msg and prevents payment from completing 
               } else {
                //added in woo 2.1
                 wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );   //supplies an error msg and prevents payment from completing 
               } 
-              //v1.07.2  end            
+               
+               //v1.07.5 begin  
+               //  Fixes an AJAX issue - with standard msgs, the inserted JS never gets where it needs to go.
+               //     rather than do the standard method, just show  the msgs and FORCE an AJAX exit.
+               $this->vtmam_display_rule_error_msg_at_checkout('yes');
+               exit(); 
+               //v1.07.5 end
+                                 
             break;                    
         }
         //v1.07.2 
@@ -226,6 +243,7 @@ class VTMAM_Parent_Cart_Validation {
   *************************************************** */ 
   public function vtmam_display_rule_error_msg_at_checkout($woo_apply_checkout_cntl = null){
     global $vtmam_info, $vtmam_cart, $vtmam_setup_options;
+
     //error messages are inserted just above the checkout products, and above the checkout form
       //In this situation, this 'id or class Selector' may not be blank, supply woo checkout default - must include '.' or '#'
     if ( $vtmam_setup_options['show_error_before_checkout_products_selector']  <= ' ' ) {
@@ -236,6 +254,9 @@ class VTMAM_Parent_Cart_Validation {
        $vtmam_setup_options['show_error_before_checkout_address_selector'] = VTMAM_CHECKOUT_ADDRESS_SELECTOR_BY_PARENT;             
     }
     
+
+
+
       /*   **  WOO changes **
         remove previous onscreen error msgs: 
                 <php if ($woo_apply_checkout_cntl == 'yes')  { >
@@ -265,13 +286,13 @@ class VTMAM_Parent_Cart_Validation {
           //default selector for products area (".shop_table") is used on BOTH cart page and checkout page. Only use on cart page
           if ( ( $vtmam_setup_options['show_error_before_checkout_products'] == 'yes' ) &&  ($vtmam_info['currPageURL'] == $vtmam_info['woo_cart_url']) ){ 
         ?>
-           $('<div class="vtmam-error" id="line-cnt<?php echo $vtmam_info['line_cnt'] ?>"><h3 class="error-title">Purchase Error</h3><p> <?php echo $vtmam_cart->error_messages[$i]['msg_text'] ?> </p></div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_products_selector'] ?>');
+           $('<div class="vtmam-error" id="line-cnt<?php echo $vtmam_info['line_cnt'] ?>"><h3 class="error-title"><?php echo $purchase_error_title ?></h3><p> <?php echo $vtmam_cart->error_messages[$i]['msg_text'] ?> </p></div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_products_selector'] ?>');
         <?php 
           } 
           //Only message which shows up on actual checkout page.
           if ( $vtmam_setup_options['show_error_before_checkout_address'] == 'yes' ){ 
         ?>
-           $('<div class="vtmam-error" id="line-cnt<?php echo $vtmam_info['line_cnt'] ?>"><h3 class="error-title">Purchase Error</h3><p> <?php echo $vtmam_cart->error_messages[$i]['msg_text'] ?> </p></div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_address_selector'] ?>');
+           $('<div class="vtmam-error" id="line-cnt<?php echo $vtmam_info['line_cnt'] ?>"><h3 class="error-title"><?php echo $purchase_error_title ?></h3><p> <?php echo $vtmam_cart->error_messages[$i]['msg_text'] ?> </p></div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_address_selector'] ?>');
     <?php 
           }
        } //v1.07 end if          

@@ -4,7 +4,7 @@ Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocom
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
 Tested up to: 4.0.1
-Stable tag: 1.07.4
+Stable tag: 1.07.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -159,6 +159,9 @@ Please review the following printed and video documentation.
 
 == Changelog ==
 
+= 1.07.5 - 2014-12-06 =
+* Fix - Full error msg for Lifetime rule when combo of cart + rule history exceeds rule limit
+
 = 1.07.4 - 2014-06-04 =
 * Fix - post-purchase processing
 
@@ -194,6 +197,9 @@ Please review the following printed and video documentation.
 
 
 == Upgrade Notice ==
+
+= 1.07.5 - 2014-12-06 =
+* Fix - Full error msg for Lifetime rule when combo of cart + rule history exceeds rule limit
 
 = 1.07.4 - 2014-06-04 =
 * Fix - post-purchase processing
