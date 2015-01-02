@@ -12,6 +12,9 @@ Parent Plugin Integration
       // from Woocommerce/templates/cart/mini-cart.php  and  Woocommerce/templates/checkout/review-order.php
         
       if (sizeof($woocommerce->cart->get_cart())>0) {
+      
+					$woocommerce->cart->calculate_totals(); //1.07.6 calculation includes generating line subtotals, used below
+          
 					$vtmam_cart = new VTMAM_Cart;  
           foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $cart_item ) {
 						$_product = $cart_item['data'];
@@ -41,14 +44,46 @@ Parent Plugin Integration
   
               
               $vtmam_cart_item->quantity      = $cart_item['quantity'];
-              $vtmam_cart_item->unit_price    = get_option( 'woocommerce_display_cart_prices_excluding_tax' ) == 'yes' || $woocommerce->customer->is_vat_exempt() ? $_product->get_price_excluding_tax() : $_product->get_price();
+              
+              //v1.07.6 commented unit price
+              //$vtmam_cart_item->unit_price    = get_option( 'woocommerce_display_cart_prices_excluding_tax' ) == 'yes' || $woocommerce->customer->is_vat_exempt() ? $_product->get_price_excluding_tax() : $_product->get_price();
               
               /*
               $quantity = 1; //v1.08 vat fix
               $vtmam_cart_item->unit_price    = get_option( 'woocommerce_display_cart_prices_excluding_tax' ) == 'yes' || $woocommerce->customer->is_vat_exempt() ? $_product->get_price_excluding_tax() : $_product->get_price_including_tax( $quantity ); //$_product->get_price();   //v1.08 vat fix
               */ 
-                           
-              $vtmam_cart_item->total_price   = $vtmam_cart_item->quantity * $vtmam_cart_item->unit_price;
+              
+              //v1.07.6 commented total_price             
+              //$vtmam_cart_item->total_price   = $vtmam_cart_item->quantity * $vtmam_cart_item->unit_price;
+              
+              
+              //v1.07.6 begin
+              //  pick up unit price from line subtotal only - 
+              //  will include all taxation and price adjustments from other plugins
+              if ( ( get_option( 'woocommerce_calc_taxes' ) == 'no' ) ||
+                   ( get_option( 'woocommerce_prices_include_tax' ) == 'no' ) ) {      
+                 //NO VAT included in price
+                 $vtmam_cart_item->unit_price  =  $cart_item['line_subtotal'] / $cart_item['quantity'];  
+                 $vtmam_cart_item->total_price =  $cart_item['line_subtotal'];                                                
+              } else {
+                 
+                 //v1.0.7.4 begin
+                 //TAX included in price in DB, and Woo $cart_item pricing **has already subtracted out the TAX **, so restore the TAX
+                 //  this price reflects the tax situation of the ORIGINAL price - so if the price was originally entered with tax, this will reflect tax
+                 $price           =  $cart_item['line_subtotal']  / $cart_item['quantity'];    
+                 $qty = 1;           
+                 $_tax  = new WC_Tax();                
+                // $product = get_product( $product_id ); 
+                 $product = get_product( $vtmam_cart_item->product_id  );
+                 $tax_rates  = $_tax->get_rates( $product->get_tax_class() );
+        			 	 $taxes      = $_tax->calc_tax( $price  * $qty, $tax_rates, false );
+        				 $tax_amount = $_tax->get_tax_total( $taxes );
+        				 $vtmam_cart_item->unit_price  = round( $price  * $qty + $tax_amount, absint( get_option( 'woocommerce_price_num_decimals' ) ) ); 
+                 $vtmam_cart_item->total_price = ($vtmam_cart_item->unit_price * $cart_item['quantity']);
+               }              
+              //v1.07.6 end
+              
+              
               /*  *********************************
               ***  JUST the cat *ids* please...
               ************************************ */

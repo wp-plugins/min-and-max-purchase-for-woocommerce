@@ -150,7 +150,7 @@ class VTMAM_Parent_Cart_Validation {
   **   Application - Apply Rules at Woo E-Commerce  ==> AT Place Order Time <==
   *************************************************** */
 	public function vtmam_woo_place_order_cntl(){
-    global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce;
+    global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce, $vtmam_setup_options;
     vtmam_debug_options();  //v1.07     
     //input and output to the apply_rules routine in the global variables.
     //    results are put into $vtmam_cart
@@ -203,12 +203,15 @@ class VTMAM_Parent_Cart_Validation {
                $this->vtmam_display_custom_messages();
                $this->vtmam_display_standard_messages();
                
-               //v1.07.5 begin  
+               //v1.07.6 begin  
                //  Fixes an AJAX issue - with standard msgs, the inserted JS never gets where it needs to go.
                //     rather than do the standard method, just show  the msgs and FORCE an AJAX exit.
-               $this->vtmam_display_rule_error_msg_at_checkout('yes');
-               exit(); 
-               //v1.07.5 end
+    
+               if ( $vtmam_setup_options[max_purch_rule_lifetime_limit_by_ip] != 'yes' )  { //v1.07.6 if ip check included, the msg will be there from previous!!
+                 $this->vtmam_display_rule_error_msg_at_checkout('yes');
+                 exit();
+               } 
+               //v1.07.6 end
                              
             break;           
           default:  //'none' / no state set yet
@@ -223,12 +226,14 @@ class VTMAM_Parent_Cart_Validation {
                 wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );   //supplies an error msg and prevents payment from completing 
               } 
                
-               //v1.07.5 begin  
+               //v1.07.6 begin  
                //  Fixes an AJAX issue - with standard msgs, the inserted JS never gets where it needs to go.
                //     rather than do the standard method, just show  the msgs and FORCE an AJAX exit.
-               $this->vtmam_display_rule_error_msg_at_checkout('yes');
-               exit(); 
-               //v1.07.5 end
+               if ( $vtmam_setup_options[max_purch_rule_lifetime_limit_by_ip] != 'yes' )  { //v1.07.6 if ip check included, the msg will be there from previous!! 
+                 $this->vtmam_display_rule_error_msg_at_checkout('yes');
+                 exit();
+               }  
+               //v1.07.6 end
                                  
             break;                    
         }
@@ -306,9 +311,9 @@ class VTMAM_Parent_Cart_Validation {
      /* ***********************************
         CUSTOM ERROR MSG CSS AT CHECKOUT
         *********************************** */
-     if ($vtmam_setup_options[custom_error_msg_css_at_checkout] > ' ' )  {
+     if ($vtmam_setup_options['custom_error_msg_css_at_checkout'] > ' ' )  {
         echo '<style type="text/css">';
-        echo $vtmam_setup_options[custom_error_msg_css_at_checkout];
+        echo $vtmam_setup_options['custom_error_msg_css_at_checkout'];
         echo '</style>';
      }
      
