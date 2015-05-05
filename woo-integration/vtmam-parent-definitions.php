@@ -11,8 +11,8 @@ class VTMAM_Parent_Definitions {
 	public function __construct(){
     
     define('VTMAM_PARENT_PLUGIN_NAME',                      'WooCommerce');
-    define('VTMAM_EARLIEST_ALLOWED_PARENT_VERSION',         '1.0');
-    define('VTMAM_TESTED_UP_TO_PARENT_VERSION',             '1.6.6');
+    define('VTMAM_EARLIEST_ALLOWED_PARENT_VERSION',         '2.1');
+    define('VTMAM_TESTED_UP_TO_PARENT_VERSION',             '2.3.8');
     define('VTMAM_DOCUMENTATION_PATH_PRO_BY_PARENT',        'http://www.varktech.com/woocommerce/min-and-max-purchase-pro-for-woocommerce/?active_tab=tutorial');                                                                                                     //***
     define('VTMAM_DOCUMENTATION_PATH_FREE_BY_PARENT',       'http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/?active_tab=tutorial');      
     define('VTMAM_INSTALLATION_INSTRUCTIONS_BY_PARENT',     'http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/?active_tab=instructions');
