@@ -322,10 +322,10 @@ class VTMAM_Parent_Cart_Validation {
   public function vtmam_display_rule_error_msg_at_checkout($woo_apply_checkout_cntl = null){
     global $vtmam_info, $vtmam_cart, $vtmam_setup_options;
 
-          
+        //$purchase_error_title doesn't actually work!!  
         for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
          if ($vtmam_cart->error_messages[$i]['msg_is_custom'] != 'yes') {  //v1.08 ==>> don't show custom messages here...             
-            $message = '<div class="vtmam-error" id="line-cnt' . $vtmam_info['line_cnt'] .  '"><h3 class="error-title">Minimum Purchase Error</h3><p>' . $vtmam_cart->error_messages[$i]['msg_text']. '</p></div>';
+            $message = '<div class="vtmam-error" id="line-cnt' . $vtmam_info['line_cnt'] .  '"><h3 class="error-title">' .$purchase_error_title. '</h3><p>' . $vtmam_cart->error_messages[$i]['msg_text']. '</p></div>';
             wc_add_notice( $message, 'error' );
           }
         }
