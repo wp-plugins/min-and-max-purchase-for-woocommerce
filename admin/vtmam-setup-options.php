@@ -408,7 +408,9 @@ function vtmam_initialize_options() {
 		array(								// The array of arguments to pass to the callback. In this case, just a description.
 			 __( 'Error messages can be shown in table formats.', 'vtmam' )
 		)
-	);                                                        
+	);   
+  
+ /*  //v1.07.7 REMOVED - all messages now use WOO messaging, so these are redundant                                                          
 	// show error msg = yes/no
 	add_settings_field(	           //opt2
 		'show_error_before_checkout_products',						// ID used to identify the field throughout the theme
@@ -453,6 +455,9 @@ function vtmam_initialize_options() {
 			__( 'For the Address area, Supplies the ID or Class HTML selector this message appears before', 'vtmam' )
 		)
 	);
+  
+  */
+  
     	// show vtmam ID = yes/no
     add_settings_field(	         //opt10
 		'show_rule_ID_in_errmsg',						// ID used to identify the field throughout the theme

@@ -3,7 +3,7 @@
 Plugin Name: VarkTech Min and Max Purchase for WooCommerce
 Plugin URI: http://varktech.com
 Description: An e-commerce add-on for WooCommerce, supplying minimum and maximum purchase functionality.
-Version: 1.07.6
+Version: 1.07.7
 Author: Vark
 Author URI: http://varktech.com
 */
@@ -20,18 +20,17 @@ Author URI: http://varktech.com
    $vtmam_cart_item;
    $vtmam_setup_options;
 
-   
+
    //initial setup only, overriden later in function vtprd_debug_options
    error_reporting(E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR); //v1.07.4
-         
-     
+    
 class VTMAM_Controller{
 	
 	public function __construct(){    
    
-		define('VTMAM_VERSION',                               '1.07.6');
+		define('VTMAM_VERSION',                               '1.07.7');
     define('VTMAM_MINIMUM_PRO_VERSION',                   '1.07.6'); //V1.07.3 
-    define('VTMAM_LAST_UPDATE_DATE',                      '2014-12-28');
+    define('VTMAM_LAST_UPDATE_DATE',                      '2015-05-04');
     define('VTMAM_DIRNAME',                               ( dirname( __FILE__ ) ));
     define('VTMAM_URL',                                   plugins_url( '', __FILE__ ) );
     define('VTMAM_EARLIEST_ALLOWED_WP_VERSION',           '3.3');   //To pick up wp_get_object_terms fix, which is required for vtmam-parent-functions.php
@@ -288,7 +287,7 @@ class VTMAM_Controller{
   *************************************************** */  
    function vtmam_activation_hook() {
      //the options are added at admin_init time by the setup_options.php as soon as plugin is activated!!!
-    //verify the requirements for Vtmin.
+    //verify the requirements for Vtmam.
     global $wp_version;
 		if((float)$wp_version < 3.3){
 			// delete_option('vtmam_setup_options');
@@ -365,6 +364,13 @@ class VTMAM_Controller{
       
       $admin_notices = '<div id="message" class="error fade" style="background-color: #FFEBE8 !important;"><p>' . $message . ' </p></div>';
       echo $admin_notices;
+      
+      //v1.07.7 added
+      $plugin = VTMAM_PRO_PLUGIN_SLUG;
+			if( is_plugin_active($plugin) ) {
+			   deactivate_plugins( $plugin );
+      }      
+                
       return;    
   }   
    //V1.07.3 end    

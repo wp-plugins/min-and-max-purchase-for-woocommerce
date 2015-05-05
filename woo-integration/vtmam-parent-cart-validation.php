@@ -16,9 +16,12 @@ class VTMAM_Parent_Cart_Validation {
      *          WOO-Specific Checkout Logic and triggers 
      *                                               
      *  =============+++++++++++++++++++++++++++++++++++++++++++++++++++++++++   */
-                                
+
+    //v1v1.07.7   changed to be direct, wp_loaded is correct!! ...
+    add_action( 'wp_loaded',                                array(&$this, 'vtmam_woo_apply_checkout_cntl'),99,1 ); //loaded passes no values, but needed for other call!!!
+                                    
     //  add actions for early entry into Woo's 3 shopping cart-related pages, and the "place order" button -    
-    
+    /*
     $vtmam_info['woo_cart_url']      =  $this->vtmam_woo_get_url('cart'); 
     $vtmam_info['woo_checkout_url']  =  $this->vtmam_woo_get_url('checkout');
     $vtmam_info['woo_pay_url']       =  $this->vtmam_woo_get_url('pay');   
@@ -26,13 +29,19 @@ class VTMAM_Parent_Cart_Validation {
       
     if ( in_array($vtmam_info['currPageURL'], array($vtmam_info['woo_cart_url'],$vtmam_info['woo_checkout_url'], $vtmam_info['woo_pay_url'] ) ) )  {      
        add_action( 'init', array(&$this, 'vtmam_woo_apply_checkout_cntl'),99 );                                                            
-    }  
+    }
+    */
+      
      /*   Priority of 99 in the action above, to delay add_action execution. The
           priority delays us in the exec sequence until after any quantity change has
           occurred, so we pick up the correct altered state. */
 
     //if "place order" button hit, this action catches and errors as appropriate
-    add_action( 'woocommerce_before_checkout_process', array(&$this, 'vtmam_woo_place_order_cntl') );   
+    //add_action( 'woocommerce_before_checkout_process', array(&$this, 'vtmam_woo_place_order_cntl') );   
+    //if "place order" button hit, this action catches and errors as appropriate
+    add_action( 'woocommerce_before_checkout_process', array(&$this, 'vtmam_woo_check_click_to_pay') );  //v1.07.7 
+
+    
     
     //save info to Lifetime tables following purchase       
      add_action('woocommerce_checkout_order_processed', array( &$this, 'vtmam_pre_purchase_save_session' ) );  // v1.07.4
@@ -68,7 +77,41 @@ class VTMAM_Parent_Cart_Validation {
   *************************************************** */
 	public function vtmam_woo_apply_checkout_cntl(){
     global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce;
-    vtmam_debug_options();  //v1.07     
+    vtmam_debug_options();  //v1.07 
+
+    //v1.07.7   begin
+    if (is_admin() ) {
+      return;
+    }
+     
+
+    $vtmam_info['woo_cart_url']      =  $this->vtmam_woo_get_url('cart'); 
+    $vtmam_info['woo_checkout_url']  =  $this->vtmam_woo_get_url('checkout');
+    $vtmam_info['currPageURL']       =  $this->vtmam_currPageURL();
+  
+   
+    if ( ($vtmam_setup_options['show_errors_on_all_pages'] == 'yes') &&
+         (isset($woocommerce) ) &&
+         (sizeof($woocommerce->cart->get_cart())>0) ) {  //only process on woo pages - "is_woocommerce()" doesn't do the job
+      $carry_on;
+    } else {
+      $currPageURL      = $vtmam_info['currPageURL'];
+      $woo_cart_url     = $vtmam_info['woo_cart_url'];
+      $woo_checkout_url = $vtmam_info['woo_checkout_url'];
+      
+      // if an ITEM HAS BEEN REMOVED, url is apemnded to (&...) , can't look for equality - look for a substring
+      //     (if CUSTOM MESSAGE not used, JS message does NOT come across in the situation where all was good, and then an item is removed)
+      if ( (strpos($currPageURL,$woo_cart_url )     !== false) ||  //BOOLEAN == true...
+           (strpos($currPageURL,$woo_checkout_url ) !== false) ) {  //BOOLEAN == true...   
+       $carry_on;     
+       
+      } else {      
+        return;
+      } 
+    }
+      //v1.07.7  end   
+      
+           
     //input and output to the apply_rules routine in the global variables.
     //    results are put into $vtmam_cart
     
@@ -94,6 +137,8 @@ class VTMAM_Parent_Cart_Validation {
             break;           
           default:  //'none' / no state set yet
                $this->vtmam_display_standard_messages();
+              //v1.07.7   REMOVED
+              /*
               //v1.07.2 begin
               $current_version =  WOOCOMMERCE_VERSION;
               if( (version_compare(strval('2.1.0'), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower     
@@ -102,6 +147,7 @@ class VTMAM_Parent_Cart_Validation {
                //added in woo 2.1
                 wc_add_notice( __('Purchase error found.', 'vtmam'), $notice_type = 'error' );   //supplies an error msg and prevents payment from completing 
               } 
+              */
               //v1.07.2  end            
             break;                    
         }
@@ -147,9 +193,10 @@ class VTMAM_Parent_Cart_Validation {
         
            
   /* ************************************************
-  **   Application - Apply Rules at Woo E-Commerce  ==> AT Place Order Time <==
+  **   Application - 
+  *   //v1.07.7 REFACTCORED
   *************************************************** */
-	public function vtmam_woo_place_order_cntl(){
+	public function vtmam_woo_check_click_to_pay(){
     global $vtmam_cart, $vtmam_cart_item, $vtmam_rules_set, $vtmam_rule, $vtmam_info, $woocommerce, $vtmam_setup_options;
     vtmam_debug_options();  //v1.07     
     //input and output to the apply_rules routine in the global variables.
@@ -175,21 +222,25 @@ class VTMAM_Parent_Cart_Validation {
     //ERROR Message Path
     if ( sizeof($vtmam_cart->error_messages) > 0 ) {  
         
+      //v1.07.7  REMOVED
+      /*
       //insert error messages into checkout page
       //this echo may result in multiple versions of the css file being called for, can't be helped.
       echo '<link rel="stylesheet" type="text/css" media="all" href="'.VTMAM_URL.'/core/css/vtmam-error-style.css" />' ;     //mwnt
             
-      /* WOO crazy error display, in this situation only:
+      // WOO crazy error display, in this situation only:
           {"result":"failure","messages":"
             \n\t\t\t
             Purchase error found.<\/li>\n\t<\/ul>","refresh":"false"}     
-      */
+
       //  These are the incorrectly displayed contens of the 'add_error' function below, and are only a problem in this particular situation
       echo '<div class="woo-apply-checkout-cntl">';  // This 'echo' allows the incorrectly displayed error msg to fall within the 'woo-apply-checkout-cntl' div, and be deleted by following JS
       $woo_apply_checkout_cntl = 'yes';
       
       //display VTMAM error msgs   
       //mwnTEST  $this->vtmam_display_rule_error_msg_at_checkout();      
+      */
+      
       
       $vtmam_cart->error_messages_processed = 'yes';
       
@@ -203,6 +254,16 @@ class VTMAM_Parent_Cart_Validation {
                $this->vtmam_display_custom_messages();
                $this->vtmam_display_standard_messages();
                
+                //v1.07.7 ADDED
+                for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
+                 if ($vtmam_cart->error_messages[$i]['msg_is_custom'] != 'yes') {  //v1.08 ==>> don't show custom messages here...             
+                    $message = '<div class="vtmam-error" id="line-cnt' . $vtmam_info['line_cnt'] .  '"><h3 class="error-title">Minimum Purchase Error</h3><p>' . $vtmam_cart->error_messages[$i]['msg_text']. '</p></div>';
+                    wc_add_notice( $message, 'error' );
+                  }
+                }
+               
+               //v1.07.7  REMOVED
+               /*
                //v1.07.6 begin  
                //  Fixes an AJAX issue - with standard msgs, the inserted JS never gets where it needs to go.
                //     rather than do the standard method, just show  the msgs and FORCE an AJAX exit.
@@ -212,11 +273,22 @@ class VTMAM_Parent_Cart_Validation {
                  exit();
                } 
                //v1.07.6 end
+               */
                              
             break;           
           default:  //'none' / no state set yet
                $this->vtmam_display_standard_messages();
-                             
+               
+                //v1.07.7 ADDED
+                for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
+                 if ($vtmam_cart->error_messages[$i]['msg_is_custom'] != 'yes') {  //v1.08 ==>> don't show custom messages here...             
+                    $message = '<div class="vtmam-error" id="line-cnt' . $vtmam_info['line_cnt'] .  '"><h3 class="error-title">Minimum Purchase Error</h3><p>' . $vtmam_cart->error_messages[$i]['msg_text']. '</p></div>';
+                    wc_add_notice( $message, 'error' );
+                  }
+                }
+               
+               //v1.07.7  REMOVED               
+               /*                             
               //v1.07.2 begin
               $current_version =  WOOCOMMERCE_VERSION;
               if( (version_compare(strval('2.1.0'), strval($current_version), '>') == 1) ) {   //'==1' = 2nd value is lower     
@@ -234,7 +306,7 @@ class VTMAM_Parent_Cart_Validation {
                  exit();
                }  
                //v1.07.6 end
-                                 
+               */                  
             break;                    
         }
         //v1.07.2 
@@ -245,68 +317,18 @@ class VTMAM_Parent_Cart_Validation {
   
   /* ************************************************
   **   Application - On Error Display Message on E-Commerce Checkout Screen  
+  * //v1.07.7 REFACTORED  
   *************************************************** */ 
   public function vtmam_display_rule_error_msg_at_checkout($woo_apply_checkout_cntl = null){
     global $vtmam_info, $vtmam_cart, $vtmam_setup_options;
 
-    //error messages are inserted just above the checkout products, and above the checkout form
-      //In this situation, this 'id or class Selector' may not be blank, supply woo checkout default - must include '.' or '#'
-    if ( $vtmam_setup_options['show_error_before_checkout_products_selector']  <= ' ' ) {
-       $vtmam_setup_options['show_error_before_checkout_products_selector'] = VTMAM_CHECKOUT_PRODUCTS_SELECTOR_BY_PARENT;             
-    }
-      //In this situation, this 'id or class Selector' may not be blank, supply woo checkout default - must include '.' or '#'
-    if ( $vtmam_setup_options['show_error_before_checkout_address_selector']  <= ' ' ) {
-       $vtmam_setup_options['show_error_before_checkout_address_selector'] = VTMAM_CHECKOUT_ADDRESS_SELECTOR_BY_PARENT;             
-    }
-    
-
-
-
-      /*   **  WOO changes **
-        remove previous onscreen error msgs: 
-                <php if ($woo_apply_checkout_cntl == 'yes')  { >
-                $('</div>').insertBefore('<php echo $vtmam_setup_options['show_error_before_checkout_address_selector'] >');  //ends the 'woo-apply-checkout-cntl' div, allows for incorrect error msg display to fall within it and be deleted by the next statement
-                <php } >
-                $('.woo-apply-checkout-cntl').remove();  //removes the stray error msg displays at checkout place order time
-                $('.vtmam-error').remove();  //removes old error msgs at checkout place order time
-           previous error msgs normally removed at screen refresh, but at "place order" time,
-           messages are returned via Ajax, and error messages will stack up.
-      */    
-     ?>     
-        <script type="text/javascript">
-        
-        jQuery(document).ready(function($) {
-          <?php if ($woo_apply_checkout_cntl == 'yes')  { ?>
-          $('</div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_address_selector'] ?>');  //ends the 'woo-apply-checkout-cntl' div, allows for incorrect error msg display to fall within it and be deleted by the next statement
-          <?php } ?>
-          $('.woo-apply-checkout-cntl').remove();  //removes the stray error msg displays at checkout place order time (if included in the 'if', doesn't work for some reason)
-          $('.vtmam-error').remove();  //removes old error msgs at checkout place order time
-    <?php 
-    //loop through all of the error messages 
-    //          $vtmam_info['line_cnt'] is used when table formattted msgs come through.  Otherwise produces an inactive css id. 
-    for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
-       if ($vtmam_cart->error_messages[$i]['msg_is_custom'] != 'yes') {  //v1.07 ==>> don't show custom messages here..     
-     ?>
-        <?php 
-          //default selector for products area (".shop_table") is used on BOTH cart page and checkout page. Only use on cart page
-          if ( ( $vtmam_setup_options['show_error_before_checkout_products'] == 'yes' ) &&  ($vtmam_info['currPageURL'] == $vtmam_info['woo_cart_url']) ){ 
-        ?>
-           $('<div class="vtmam-error" id="line-cnt<?php echo $vtmam_info['line_cnt'] ?>"><h3 class="error-title"><?php echo $purchase_error_title ?></h3><p> <?php echo $vtmam_cart->error_messages[$i]['msg_text'] ?> </p></div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_products_selector'] ?>');
-        <?php 
-          } 
-          //Only message which shows up on actual checkout page.
-          if ( $vtmam_setup_options['show_error_before_checkout_address'] == 'yes' ){ 
-        ?>
-           $('<div class="vtmam-error" id="line-cnt<?php echo $vtmam_info['line_cnt'] ?>"><h3 class="error-title"><?php echo $purchase_error_title ?></h3><p> <?php echo $vtmam_cart->error_messages[$i]['msg_text'] ?> </p></div>').insertBefore('<?php echo $vtmam_setup_options['show_error_before_checkout_address_selector'] ?>');
-    <?php 
+          
+        for($i=0; $i < sizeof($vtmam_cart->error_messages); $i++) { 
+         if ($vtmam_cart->error_messages[$i]['msg_is_custom'] != 'yes') {  //v1.08 ==>> don't show custom messages here...             
+            $message = '<div class="vtmam-error" id="line-cnt' . $vtmam_info['line_cnt'] .  '"><h3 class="error-title">Minimum Purchase Error</h3><p>' . $vtmam_cart->error_messages[$i]['msg_text']. '</p></div>';
+            wc_add_notice( $message, 'error' );
           }
-       } //v1.07 end if          
-    }  //end 'for' loop      
-     ?>   
-            });   
-          </script>
-     <?php    
-
+        }
 
      /* ***********************************
         CUSTOM ERROR MSG CSS AT CHECKOUT

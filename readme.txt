@@ -3,8 +3,8 @@ Contributors: vark
 Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
-Tested up to: 4.2
-Stable tag: 1.07.6
+Tested up to: 4.2.1
+Stable tag: 1.07.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -159,6 +159,9 @@ Please review the following printed and video documentation.
 
 == Changelog ==
 
+= 1.07.7 - 2015-05-04 =
+* Enhancement - Refactor all messaging to now be all Woo-based
+
 = 1.07.6 - 2014-12-28 =
 * Fix - added 'doing ajax' to lifetime fix of 1.07.5
 * Fix - pull displayed unit cost from cart price rather than db
@@ -201,6 +204,9 @@ Please review the following printed and video documentation.
 
 
 == Upgrade Notice ==
+
+= 1.07.7 - 2015-05-04 =
+* Enhancement - Refactor all messaging to now be all Woo-based
 
 = 1.07.6 - 2014-12-28 =
 * Fix - added 'doing ajax' to lifetime fix of 1.07.5
