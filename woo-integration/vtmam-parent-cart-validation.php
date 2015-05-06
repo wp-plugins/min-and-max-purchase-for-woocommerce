@@ -184,7 +184,7 @@ class VTMAM_Parent_Cart_Validation {
             $woocommerce->add_error(  $vtmam_cart->error_messages[$i]['msg_text'] );  //supplies an error msg and prevents payment from completing 
           } else {
            //added in woo 2.1
-            wc_add_notice( $vtmam_cart->error_messages[$i]['msg_text'], $notice_type = 'error' );   //supplies an error msg and prevents payment from completing 
+            wc_add_notice( stripslashes($vtmam_cart->error_messages[$i]['msg_text']), $notice_type = 'error' );   //supplies an error msg and prevents payment from completing //v1.07.7  added stripslashes
           } 
           //v1.07.2  end       
        } //end if
