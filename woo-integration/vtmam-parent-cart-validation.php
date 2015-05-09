@@ -470,11 +470,18 @@ class VTMAM_Parent_Cart_Validation {
         $data_chain = array();
       }
          
+      //v1.07.8 begin
+      /*  REMOVED - do data chain moves ALWAYS
       if ($vtmam_rules_set == '') {        
         $vtmam_rules_set = $data_chain[0];
         $vtmam_cart      = $data_chain[1];
         $vtmam_info      = $data_chain[2];
       }
+      */
+      $vtmam_rules_set = $data_chain[0];
+      $vtmam_cart      = $data_chain[1];
+      $vtmam_info      = $data_chain[2]; 
+      //v1.07.8 end     
 
       return $data_chain;
    }
