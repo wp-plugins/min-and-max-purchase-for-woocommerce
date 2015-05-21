@@ -23,6 +23,7 @@
             div#vtmam-rule-resources,
             div#vtmam-errmsg,
             div#vtmam-rule-custom-message,    /* v1.07 */
+            div#vtmam-rule-repeating-groups,    /* v1.07.9 */
             div#submitdiv 
             {display:block;}
             /* end fix */
@@ -35,6 +36,7 @@
             div#vtmam-rule-msg.postbox,
             div#vtmam-rule-minandmax.postbox,
             div#vtmam-rule-custom-message.postbox,     /* v1.07 */
+            div#vtmam-rule-repeating-groups.postbox,    /* v1.07.9 */
             div#vtmam-errmsg.postbox {
               padding-bottom:10px;
               height:auto;
@@ -572,4 +574,29 @@
                 margin-top: 5px;
            }    
            #cust-msg-text-label-area {margin-top:10px;}                        
-          /*   v1.07 END */             
+          /*   v1.07 END */   
+          
+         /*   ***********************   */
+          /*   v1.07.9 BEGIN */
+          /*   ***********************   */
+          #repeating-groups-area,
+          #repeating-groups-area h3,
+          #repeating-groups-comment,
+          #repeating-groups-optional,
+          #repeating-groups {float:left;} 
+
+          #custMsg-select {width:auto;margin-top: 15px;}
+          #repeating-groups-comment {    
+                font-size: 12px;
+                font-style: italic;
+                margin-left: 6%;
+               /* margin-top: -5px; */
+                }
+           #repeating-groups-optional {
+                font-size: 10px;
+                font-style: italic;
+                margin-top: 5px;
+           }    
+           #repeating-groups-label-area {margin-top:10px;}                        
+          /*   v1.07.9 END */   
+                    

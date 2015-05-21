@@ -126,7 +126,19 @@ class VTMAM_Rule_update {
             $vtmam_rule->maxRule_typeSelected[1]['user_input'] = $selected;
           break;
      }     
-     
+
+     //v1.07.9 begin
+     $vtmam_rule->repeatingGroups = $_REQUEST['repeating-groups'];
+     if ( ( $vtmam_rule->repeatingGroups == '')  ||
+          ( $vtmam_rule->repeatingGroups == ' ') ) {
+        $vtmam_rule->repeatingGroups = '';   //re-initialize if default msg still there...
+     } else {
+       if ( is_numeric($vtmam_rule->repeatingGroups)  === false  ) {
+           $vtmam_rule->rule_error_message[] = __('If Repeating Groups is chosen, this must be a number greater than 0.', 'vtmam');              
+       }
+     }  
+     //v1.07.9 end
+          
      //v1.07 begin
      $vtmam_rule->custMsg_text = $_REQUEST['cust-msg-text'];
      global $vtmam_info;

@@ -61,7 +61,8 @@ class VTMAM_Rule {
      //custom messaging      
      public  $custMsg_text;
      //v1.07 end     
-              
+     public  $repeatingGroups; //v1.07.9 
+               
      /*********************
      * error messages during admin rule creation - if error message, 
      *      overall rule status is pending, 
@@ -299,6 +300,7 @@ class VTMAM_Rule {
      $this->maxRule_typeSelected_selection; //cart or lifetime      
           
      $this->custMsg_text; //v1.07
+     $this->repeatingGroups; //v1.07.9
             
      /* ************************************************* */
      /* ************************************************* */

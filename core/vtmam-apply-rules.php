@@ -96,6 +96,7 @@ class VTMAM_Apply_Rules{
                $vtmam_rules_set[$i]->specChoice_in_selection = 'all' ; 
             }
             
+           
             switch( $vtmam_rules_set[$i]->specChoice_in_selection ) {
                case 'all':  //$specChoice_value = 'all'  => total up everything in the population as a unit  
                     if ($vtmam_rules_set[$i]->amtSelected_selection == 'currency'){   //price total
@@ -127,6 +128,15 @@ class VTMAM_Apply_Rules{
                             }
                         }
                     } 
+                    
+                    //v1.07.9 begin
+                      if ( ( $vtmam_rules_set[$i]->repeatingGroups > 0 ) &&
+                           ( $vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum' )  && 
+                          ( ($vtmam_rules_set[$i]->inpop_qty_total % $vtmam_rules_set[$i]->repeatingGroups) > 0) ) { 
+                      $vtmam_rules_set[$i]->rule_requires_cart_action = 'yes';
+                    }
+                    //v1.07.9 end
+                                        
                     if ($vtmam_rules_set[$i]->rule_requires_cart_action == 'yes') {
                        for($k=0; $k < $sizeOf_inpop_found_list; $k++) {
                           $this->vtmam_mark_product_as_requiring_cart_action($i,$k);                          
@@ -138,7 +148,17 @@ class VTMAM_Apply_Rules{
                         if ($vtmam_rules_set[$i]->amtSelected_selection == 'currency'){   //price total
                             if ($vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum') {
                                 if ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_total_price'] >= $vtmam_rules_set[$i]->minandmax_amt['value']){
-                                   $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                  // $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                                      
+                                  //v1.07.9 begin
+                                    if ( ( $vtmam_rules_set[$i]->repeatingGroups > 0 ) &&
+                                        ( ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_qty'] % $vtmam_rules_set[$i]->repeatingGroups) > 0) ) { 
+                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
+                                  } else {
+                                    $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                  }
+                                  //v1.07.9 end
+                     
                                 }  else {
                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
                                 }
@@ -152,7 +172,17 @@ class VTMAM_Apply_Rules{
                         }  else {
                             if ($vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum') {
                                 if ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_qty'] >= $vtmam_rules_set[$i]->minandmax_amt['value']){
-                                   $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                  // $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                                      
+                                  //v1.07.9 begin
+                                    if ( ( $vtmam_rules_set[$i]->repeatingGroups > 0 ) &&
+                                        ( ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_qty'] % $vtmam_rules_set[$i]->repeatingGroups) > 0) ) { 
+                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
+                                  } else {
+                                    $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                  }
+                                  //v1.07.9 end
+                                
                                 }  else {
                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
                                 }
@@ -173,7 +203,18 @@ class VTMAM_Apply_Rules{
                         if ($vtmam_rules_set[$i]->amtSelected_selection == 'currency'){   //price total
                             if ($vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum') {
                                 if ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_total_price'] >= $vtmam_rules_set[$i]->minandmax_amt['value']){
-                                   $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                   //$vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                                      
+                                  //v1.07.9 begin
+                                    if ( ( $vtmam_rules_set[$i]->repeatingGroups > 0 ) &&
+                                        ( ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_qty'] % $vtmam_rules_set[$i]->repeatingGroups) > 0) ) { 
+                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
+                                    $any_action_cnt++;
+                                  } else {
+                                    $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                  }
+                                  //v1.07.9 end
+                                        
                                 }  else {
                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
                                    $any_action_cnt++;
@@ -189,7 +230,18 @@ class VTMAM_Apply_Rules{
                         }  else {
                             if ($vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum') {
                                 if ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_qty'] >= $vtmam_rules_set[$i]->minandmax_amt['value']){
-                                   $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                   //$vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                                       
+                                  //v1.07.9 begin
+                                    if ( ( $vtmam_rules_set[$i]->repeatingGroups > 0 ) &&
+                                        ( ($vtmam_rules_set[$i]->inpop_found_list[$k]['prod_qty'] % $vtmam_rules_set[$i]->repeatingGroups) > 0) ) { 
+                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
+                                    $any_action_cnt++;
+                                  } else {
+                                    $vtmam_rules_set[$i]->inpop_found_list[$k]['prod_requires_action'] = 'no';
+                                  }
+                                  //v1.07.9 end
+                                   
                                 }  else {
                                    $this->vtmam_mark_product_as_requiring_cart_action($i,$k);
                                    $any_action_cnt++;
@@ -480,9 +532,8 @@ class VTMAM_Apply_Rules{
          $this->vtmam_set_custom_msgs_status ('standardMsg');     //v1.07       
       }
   } 
+   
   
-  
-        
    public function vtmam_table_detail_lines_cntl ($i) {
       global $vtmam_setup_options, $vtmam_cart, $vtmam_rules_set, $vtmam_rule, $vtmam_info;
       
@@ -678,7 +729,7 @@ class VTMAM_Apply_Rules{
     	return $currency_symbol;
   } 
 */           
-   public function vtmam_table_text_line ($i){
+   public function vtmam_table_text_line($i){
       global $vtmam_setup_options, $vtmam_cart, $vtmam_rules_set, $vtmam_rule, $vtmam_info;
       
       $message_text;
@@ -691,7 +742,14 @@ class VTMAM_Apply_Rules{
       $message_text .= __('">', 'vtmam');
       $message_text .= __('Error => </span>', 'vtmam');  //end "color-grp"
       if ($vtmam_rules_set[$i]->minandmaxSelected_selection == 'Minimum') {
-        $message_text .= __('Minimum Purchase ', 'vtmam');  
+        //$message_text .= __('Minimum Purchase ', 'vtmam'); 
+        //v1.07.9 begin
+        if ($vtmam_rules_set[$i]->repeatingGroups > 0) {
+          $message_text .= __('</span>Minimum Purchase/Repeating Groups ', 'vtmam');
+        } else {
+          $message_text .= __('</span>Minimum Purchase ', 'vtmam');
+        }
+        //v1.07.9 end         
       } else {
         $message_text .= __('Maximum Purchase ', 'vtmam'); 
       }

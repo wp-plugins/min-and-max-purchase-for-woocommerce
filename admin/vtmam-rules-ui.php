@@ -24,7 +24,7 @@ class VTMAM_Rules_UI {
   public function vtmam_enqueue_script() {
     global $post_type;
     if( 'vtmam-rule' == $post_type ){ 
-        wp_register_style( 'vtmam-admin-style', VTMAM_URL.'/admin/css/vtmam-admin-style.css' );  
+        wp_register_style( 'vtmam-admin-style', VTMAM_URL.'/admin/css/vtmam-admin-style-v002.css' );  //v1.07.9 
         wp_enqueue_style('vtmam-admin-style');
         wp_register_script( 'vtmam-admin-script', VTMAM_URL.'/admin/js/vtmam-admin-script.js' );  
         wp_enqueue_script('vtmam-admin-script');
@@ -102,6 +102,7 @@ class VTMAM_Rules_UI {
       add_meta_box('vtmam-pop-in-select', __('Cart Search Criteria', 'vtmam'), array(&$this, 'vtmam_pop_in_select'), 'vtmam-rule', 'normal', 'high');                      
       add_meta_box('vtmam-pop-in-specifics', __('Rule Application Method', 'vtmam'), array(&$this, 'vtmam_pop_in_specifics'), 'vtmam-rule', 'normal', 'high');
       add_meta_box('vtmam-rule-amount', __('Quantity or Price Min or Max Amount', 'vtmam'), array(&$this, 'vtmam_rule_amount'), 'vtmam-rule', 'normal', 'high');
+      add_meta_box('vtmam-rule-repeating-groups', __('Minimum Purchase Repeating Groups', 'vtmin'), array(&$this, 'vtmam_rule_repeating_groups'), 'vtmam-rule', 'normal', 'default');  //v1.07.9
       add_meta_box('vtmam-rule-custom-message', __('Custom Message', 'vtmam'), array(&$this, 'vtmam_rule_custom_message'), 'vtmam-rule', 'normal', 'default');  //v1.07      
       add_meta_box('vtmam-rule-id', __('Min or Max Purchase Rule ID', 'vtmam'), array(&$this, 'vtmam_rule_id'), 'vtmam-rule', 'side', 'low'); //low = below Publish box
       add_meta_box('vtmam-rule-resources', __('Resources', 'vtmam'), array(&$this, 'vtmam_rule_resources'), 'vtmam-rule', 'side', 'low'); //low = below Publish box 
@@ -613,6 +614,24 @@ class VTMAM_Rules_UI {
       <?php
   } 
    
+   //v1.07.9 NEW FUNCTION 
+   //repeating groups by count or $ value                                                                        
+    public    function vtmam_rule_repeating_groups() {
+        global $post, $vtmam_info, $vtmam_rule, $vtmam_rules_set;                   
+          ?>
+        <div class="rule_message clear-left" id="repeating-groups-area">
+           <span class="newColumn1" id=repeating-groups-label-area>
+              <h3><?php _e('Repeating Groups Quantity', 'vtmam')?></h3>
+              <span id='repeating-groups-optional'>(optional)</span>
+              <span class="clear-left" id='repeating-groups-comment'>(rule purchases must be in groups of X count)</span>
+           </span>   
+            <textarea name="repeating-groups" type="text" class="msg-text" id="repeating-groups"><?php echo $vtmam_rule->repeatingGroups; ?></textarea> 
+        </div>
+
+      <?php
+  }  
+  //v1.07.9 end
+     
    //V1.07 New
    //Custom Message overriding default messaging                                                                        
     public    function vtmam_rule_custom_message() {
