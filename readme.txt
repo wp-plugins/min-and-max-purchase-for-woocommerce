@@ -3,7 +3,7 @@ Contributors: vark
 Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
-Tested up to: 4.2.2
+Tested up to: 4.2.4
 Stable tag: 1.07.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
