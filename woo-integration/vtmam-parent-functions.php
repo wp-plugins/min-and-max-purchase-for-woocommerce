@@ -105,7 +105,10 @@ Parent Plugin Integration
       */ 
        //     if( defined('VTMAM_PRO_DIRNAME') && ($vtmam_info['get_purchaser_info'] == 'yes') )  {
       if(defined('VTMAM_PRO_DIRNAME')) {
-       require_once ( VTMAM_PRO_DIRNAME . '/woo-integration/vtmam-get-purchaser-info.php' );    
+        //v1.07.91 begin
+        require ( VTMAM_PRO_DIRNAME . '/woo-integration/vtmam-get-purchaser-info.php' ); 
+        //require_once ( VTMAM_PRO_DIRNAME . '/woo-integration/vtmam-get-purchaser-info.php' ); 
+        //v1.07.91 end  
       }
         
         

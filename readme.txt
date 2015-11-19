@@ -3,8 +3,8 @@ Contributors: vark
 Donate link: http://www.varktech.com/woocommerce/min-and-max-purchase-for-woocommerce/
 Tags: e-commerce, WP e-Commerce, shop, store, admin, price, pricing, maximum, purchase, limits, checkout
 Requires at least: 3.3
-Tested up to: 4.3
-Stable tag: 1.07.9
+Tested up to: 4.4
+Stable tag: 1.07.91
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -159,6 +159,10 @@ Please review the following printed and video documentation.
 
 == Changelog ==
 
+= 1.07.91 - 2015-08-18 =
+* Fix - Prevent message duplication
+* Fix - Lifetime history tracking
+
 = 1.07.9 - 2015-05-19 =
 * Enhancement - Added variable for repeating groups - min of 6, 12, 18, 24 .... purchases
 
@@ -210,6 +214,10 @@ Please review the following printed and video documentation.
 
 
 == Upgrade Notice ==
+
+= 1.07.91 - 2015-08-18 =
+* Fix - Prevent message duplication
+* Fix - Lifetime history tracking
 
 = 1.07.9 - 2015-05-19 =
 * Enhancement - Added variable for repeating groups - min of 6, 12, 18, 24 .... purchases

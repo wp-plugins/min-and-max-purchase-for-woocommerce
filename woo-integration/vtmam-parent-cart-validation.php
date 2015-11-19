@@ -123,6 +123,8 @@ class VTMAM_Parent_Cart_Validation {
     */
      $vtmam_apply_rules = new VTMAM_Apply_Rules;   
     
+    wc_clear_notices(); //v1.07.91  - clear out existing notices
+    
     //ERROR Message Path
     if ( sizeof($vtmam_cart->error_messages) > 0 ) { 
     
@@ -218,6 +220,8 @@ class VTMAM_Parent_Cart_Validation {
          // add_action('wp_head', array(&$this, 'vtmam_display_rule_error_msg_at_checkout') );  //JS to insert error msgs 
       *********************************************************************************************************  
     */
+    
+    wc_clear_notices(); //v1.07.91  - clear out existing notices
     
     //ERROR Message Path
     if ( sizeof($vtmam_cart->error_messages) > 0 ) {  
